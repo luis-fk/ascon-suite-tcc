@@ -1,0 +1,66 @@
+\chapter{Considerações Preliminares} \label{cap:consideracoes}
+
+%\section{Conclusões do Projeto de Formatura}
+%Apresentar o balanço do trabalho: resultados atingidos e não atingidos, com justificativas.
+
+%\section{Contribuições}
+%Apresentar as contribuições do trabalho, ressaltando o que foi efetivamente da autoria da equipe.
+
+%% Descrever os trabalhos que podem ser realizados como continuação do projeto de formatura.
+Até a presente etapa de desenvolvimento do trabalho, os esforços foram concentrados na consolidação da fundamentação teórica, na revisão bibliográfica e na especificação da arquitetura do sistema. O trabalho estabeleceu a base conceitual necessária para a integração segura de dispositivos IoT em redes LoRaWAN, definindo os papéis do nó sensor, do \textit{gateway} e da infraestrutura de \textit{backend}. 
+
+Durante a fase de especificação, foi possível justificar tecnicamente as escolhas das tecnologias que comporão o protótipo. A família de criptografia leve Ascon foi selecionada para garantir a confidencialidade e integridade dos dados em trânsito com baixo custo computacional, adotando-se a variante Ascon-128a, versão 1.2, baseada na mesma estrutura de permutação do Ascon-AEAD128 padronizado, que se sobrepõe a alternativas legadas devido à sua adequação a ambientes restritos. Em paralelo, a estratégia de aprendizado de máquina foi definida, optando-se por modelos de regressão temporal não supervisionados (utilizando os \textit{datasets} Tour Perret e GUARD) como mecanismo de detecção de anomalias operacionais.
+
+\section{Perspectivas de Continuidade}
+
+O presente trabalho estabelece uma arquitetura de segurança integrada para 
+redes LoRaWAN, combinando criptografia leve por meio do padrão Ascon e 
+detecção de anomalias via modelos de regressão temporal. Embora os objetivos 
+definidos para este projeto sejam tratados de forma completa nas etapas 
+descritas nos capítulos anteriores, a natureza do problema abre caminhos 
+relevantes para investigações futuras.
+
+A perspectiva de maior interesse imediato diz respeito à portabilidade da 
+fase de inferência dos modelos treinados para o próprio gateway da rede. 
+Neste trabalho, o treinamento e a avaliação dos modelos são realizados em 
+ambiente computacional convencional, decisão justificada pelas restrições de 
+hardware incompatíveis com o processo de treinamento. Contudo, uma vez 
+obtido um modelo com desempenho satisfatório, torna-se pertinente investigar 
+se sua fase de inferência pode ser executada diretamente no gateway, 
+eliminando a necessidade de transmissão dos dados brutos para uma camada 
+externa de processamento.
+
+Essa investigação demandaria a análise da complexidade do modelo resultante 
+— em termos de número de parâmetros, tamanho serializado e tempo de 
+inferência — em relação às restrições de memória RAM e armazenamento em 
+\textit{flash} do hardware adotado. Ferramentas como o TensorFlow Lite for 
+Microcontrollers e a biblioteca \textit{emlearn} permitem a conversão de 
+modelos treinados em Python para código C otimizado, compatível com 
+microcontroladores como o ESP32 \cite{ray2022}. Técnicas de compressão como 
+quantização de pesos e poda de conexões poderiam ser aplicadas para reduzir 
+o custo computacional sem perda significativa de desempenho \cite{jacob2018}.
+
+Uma segunda perspectiva relevante envolve a extensão da abordagem de 
+detecção para incorporar dados rotulados de ataque, como os disponíveis no 
+\textit{dataset} GUARD. Com resultados de regressão consolidados sobre o 
+Tour Perret, seria possível investigar em que medida os resíduos produzidos 
+pelos modelos se comportam de forma diferenciada diante de \textit{frames} 
+reconhecidamente manipulados, abrindo caminho para uma avaliação mais 
+rigorosa da capacidade de detecção em cenários com ataques conhecidos.
+
+Por fim, a arquitetura proposta poderia ser estendida para contemplar 
+mecanismos de atualização contínua do modelo, permitindo que o sistema se 
+adapte a mudanças graduais no comportamento da rede — como variações 
+sazonais de sinal ou substituição de dispositivos — sem comprometer a 
+sensibilidade à detecção de anomalias. Essa capacidade de adaptação é 
+especialmente relevante em implantações de longa duração, características 
+de aplicações industriais e de cidades inteligentes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Segurança Física do ESP32}
+Embora os resultados deste trabalho procurem demonstrar que a implementação Ascon adotada (variante Ascon-128a) fornece segurança robusta e viabilidade de processamento para os dados em trânsito pela rede LoRaWAN, é fundamental ressaltar que a integridade do sistema como um todo depende do sigilo da chave criptográfica armazenada no nó sensor. Como dispositivos de borda (\textit{Edge}) operam em ambientes fisicamente hostis e não supervisionados, eles se mantêm como alvos potenciais para ataques de extração de memória (\textit{Flash Dumping}).
+
+Neste contexto, convém destacar que o escopo analítico desta pesquisa concentrou-se na eficiência das primitivas criptográficas. Contudo, para a transição desse modelo para uma implantação real, a segurança em nível de hardware atua como uma camada complementar e indispensável.
+
+Como recomendação para mitigar essas vulnerabilidades físicas em desenvolvimentos futuros ou aplicações comerciais baseadas nesta arquitetura, sugere-se a adoção conjunta dos mecanismos nativos de segurança da família ESP32 \cite{espressif2024flash} \cite{kosemen2021tamper}. A proteção da chave simétrica do Ascon pode ser efetivada utilizando o recurso de \textit{Flash Encryption} sobre a partição não-volátil (NVS), com a chave mestre gravada nos \textit{eFuses} do microcontrolador (OTP) e protegida contra leitura externa (\textit{Read Protect}). Somado a isso, a implementação da Inicialização Segura (\textit{Secure Boot}), verificando a assinatura digital do \textit{firmware} a cada inicialização, previne ataques de regravação maliciosa. Dessa forma, garante-se que a eficiência criptográfica comprovada do Ascon opere sobre uma fundação de hardware onde os dados em repouso e o código de execução estejam devidamente protegidos contra o acesso físico não autorizado.
