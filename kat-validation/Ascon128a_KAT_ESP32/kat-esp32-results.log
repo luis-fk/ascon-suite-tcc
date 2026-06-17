@@ -1,0 +1,21 @@
+===============================================================
+ Ascon-128a (v1.2) -- KAT on-device (ESP32)
+===============================================================
+Placa       : ESP32 (boot classico; rst:0x1 POWERON_RESET, boot unico)
+Captura     : Monitor Serial do Arduino IDE @ 115200 baud
+Subconjunto : 6 vetores representativos (limites de bloco), extraidos
+              de ASCON-128a.txt e validados antes em desktop.
+
+--- Saida da placa ---
+=== Ascon-128a KAT (on-device, ESP32) ===
+Estado incremental (bytes): 80
+
+PT=0 AD=0 ... OK
+PT=0 AD=16 ... OK
+PT=5 AD=0 ... OK
+PT=16 AD=0 ... OK
+PT=1 AD=1 ... OK
+PT=32 AD=32 ... OK
+
+Resultado: 6/6 vetores passaram.
+>>> TODOS OS VETORES PASSARAM NA PLACA <<<
