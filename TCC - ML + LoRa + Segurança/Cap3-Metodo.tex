@@ -1,9 +1,6 @@
 \chapter{Método do trabalho} \label{cap:metodo}
 
-
 Este capítulo apresenta o método adotado na construção da proposta deste trabalho. A definição da solução foi conduzida a partir de três frentes complementares: levantamento bibliográfico, análise técnica das tecnologias envolvidas e organização da arquitetura do sistema. O objetivo desse processo foi estruturar uma proposta coerente para comunicação, segurança e análise de dados em um cenário de sistemas embarcados e Internet das Coisas.
-
-Inicialmente, é apresentada a arquitetura de comunicação e infraestrutura do sistema, que estabelece o caminho de coleta, encaminhamento e armazenamento dos dados. Em seguida, são apresentadas as etapas relacionadas à segurança e ao uso de aprendizado de máquina, consideradas como partes integradas à solução proposta. Ao final, o capítulo organiza os elementos que orientam a implementação e a avaliação do sistema.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14,18 +11,9 @@ A definição da arquitetura do sistema foi conduzida a partir da combinação e
 
 Como referência metodológica para essa definição, o trabalho adota princípios inspirados no modelo RM-ODP, utilizando diferentes pontos de vista para organizar a solução. Em termos funcionais, foram identificados os principais blocos responsáveis pela coleta, encaminhamento, recebimento e armazenamento das informações. Em termos de informação, foram considerados os dados de aplicação e os metadados necessários para rastreabilidade, segurança e análise posterior. Em termos de engenharia, foram observadas as separações entre o trecho embarcado da comunicação, o gateway e a infraestrutura de backend.
 
-A partir dessa organização, a arquitetura foi estruturada de modo a separar claramente a comunicação em campo da camada de aplicação. Essa separação permite tratar, de forma independente, as restrições energéticas dos nós sensores, o papel intermediário do gateway e as funções de autenticação, persistência e análise associadas ao backend. Com isso, a definição arquitetural deixa de ser apenas uma escolha de componentes e passa a refletir a distribuição de responsabilidades entre as partes do sistema.
+A partir dessa organização, a arquitetura foi estruturada de modo a separar claramente a comunicação em campo da camada de aplicação. Essa separação permite tratar, de forma independente, as restrições energéticas dos nós sensores, o papel intermediário do gateway e as funções de autenticação, persistência e análise associadas ao backend.
 
 Além da decomposição dos componentes, o procedimento de definição da arquitetura também considerou o fluxo das informações ao longo da solução. Para isso, foram analisadas as interações entre os nós de campo, o gateway e a infraestrutura de backend, buscando garantir que o sistema fosse capaz de receber, registrar e armazenar dados e metadados de forma compatível com as etapas posteriores do trabalho.
-
-% figura metodológica simples mostrando o processo de definição da arquitetura.
-% Exemplo de legenda:
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{figuras/metodo_definicao_arquitetura.png}
-%     \caption{Etapas do procedimento adotado para definição da arquitetura do sistema.}
-%     \label{fig:metodo-definicao-arquitetura}
-% \end{figure}
 
 Por fim, a representação da interação entre os principais componentes foi organizada também por meio de diagramas, de modo a tornar mais clara a sequência de eventos envolvida na coleta, no encaminhamento e no armazenamento das mensagens. Essa modelagem auxilia tanto na compreensão da proposta quanto na transição entre a etapa metodológica e a etapa posterior de especificação da arquitetura.
 
@@ -39,7 +27,7 @@ Esses critérios levaram à definição de uma arquitetura em blocos com papéis
 
 Para explicitar a dinâmica de funcionamento da proposta, o fluxo principal de interação entre os componentes foi modelado em termos de sequência de eventos. Essa modelagem considera a coleta dos dados no nó de campo, a transmissão pela rede LoRaWAN, a recepção e o enriquecimento da mensagem no gateway, o encaminhamento ao backend por Wi-Fi e HTTP, e o armazenamento final de dados e metadados na infraestrutura de persistência.
 
-A utilização de um diagrama de sequência nessa etapa é importante porque permite representar, de forma mais direta, a ordem das interações entre os componentes e os pontos em que ocorre o tratamento das mensagens. Com isso, o fluxo deixa de ser apenas uma descrição textual e passa a ser apresentado também como uma sequência organizada de ações entre entidades bem definidas.
+A utilização de um diagrama de sequência nessa etapa é importante porque permite representar, de forma mais direta, a ordem das interações entre os componentes e os pontos em que ocorre o tratamento das mensagens.
 
 \begin{figure}[htb]
   \caption{\label{infra_arch_1}Diagrama de sequência UML do fluxo principal}
@@ -50,58 +38,6 @@ A utilização de um diagrama de sequência nessa etapa é importante porque per
 \end{figure}
 
 Essa representação também ajuda a evidenciar que o sistema foi concebido para operar de forma orientada a evento. Em vez de depender de comunicação contínua, o fluxo é ativado pela geração e recepção das mensagens produzidas em campo, o que torna a proposta mais compatível com o tipo de aplicação e com as restrições energéticas associadas aos dispositivos embarcados.
-
-% \section{Definição da Arquitetura de Comunicação e Infraestrutura}
-
-% A arquitetura proposta neste trabalho foi definida com o objetivo de organizar, de forma clara, os principais componentes do sistema e o papel de cada um deles. A solução parte de um cenário típico de Internet das Coisas, no qual dispositivos embarcados coletam dados do ambiente, transmitem essas informações por uma rede de baixo consumo e as encaminham para uma infraestrutura capaz de recebê-las e armazená-las.
-
-% No trecho de campo, o sistema é composto por nós sensores e atuadores responsáveis pela coleta de dados e pela transmissão de mensagens curtas. Para essa etapa, o trabalho adota a arquitetura e os princípios operacionais do LoRaWAN, por sua adequação a aplicações com restrições de energia e necessidade de comunicação em maior alcance. Considerando o escopo experimental do projeto, a implementação é pensada em um protótipo reduzido, com número limitado de nós e gateway.
-
-% Entre os nós e a infraestrutura de backend, foi definido um gateway baseado em ESP32. Esse gateway recebe as mensagens da rede de campo e as encaminha para a camada de aplicação. A comunicação entre o gateway e o backend utiliza Wi-Fi, o que facilita a integração com uma API autenticada e com o armazenamento dos dados em banco. Nesse contexto, LoRaWAN e Wi-Fi não são tratados como alternativas concorrentes, mas como tecnologias com funções diferentes dentro da mesma arquitetura.
-
-% Deste modo, a proposta é organizada em quatro blocos principais: nós sensores/atuadores, gateway, backend/API e persistência. Essa estrutura define a base do sistema e permite, posteriormente, incorporar os mecanismos de criptografia leve e os procedimentos de análise por aprendizado de máquina discutidos nas demais partes do trabalho.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Papel do gateway na arquitetura proposta}
-
-% O gateway ocupa uma posição central na arquitetura proposta, pois faz a ligação entre a rede de campo e a infraestrutura de backend. Sua função principal é receber as mensagens transmitidas pelos nós sensores e atuadores por meio da comunicação LoRaWAN e encaminhá-las para a camada de aplicação, onde serão autenticadas e armazenadas.
-
-% No sistema proposto, o gateway não é tratado como um elemento de processamento intensivo. Seu papel é intermediário e bem definido: receber os dados, registrar informações relevantes da recepção, organizar o conteúdo da mensagem e realizar o envio ao backend por meio de Wi-Fi e HTTP. Essa escolha mantém a arquitetura simples e separa com clareza a etapa de comunicação em campo da etapa de processamento e persistência.
-
-% Além do encaminhamento das mensagens, o gateway também pode exercer uma função de suporte à robustez da comunicação. Em situações de indisponibilidade temporária da conexão com a infraestrutura, ele pode manter um armazenamento local temporário, permitindo o reenvio posterior das informações recebidas. Com isso, reduz-se o risco de perda imediata de dados por falhas pontuais no enlace entre o gateway e o backend.
-
-% Outra responsabilidade importante do gateway é o registro de metadados associados à recepção das mensagens. Entre esses metadados, destacam-se informações como instante de recebimento, intensidade e qualidade do sinal, identificação do gateway e indicação de retransmissão ou armazenamento temporário, quando aplicável. Esses dados complementam o conteúdo enviado pelos nós e aumentam a utilidade do sistema tanto para fins de rastreabilidade quanto para as etapas posteriores de segurança e análise por aprendizado de máquina.
-
-% Dessa forma, o gateway é definido como um elemento de integração e organização da comunicação, e não como o núcleo principal de processamento do sistema. Essa decisão contribui para uma arquitetura mais clara, mais modular e mais adequada ao tipo de aplicação considerado neste trabalho.
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Fluxo de dados entre os componentes do sistema}
-
-% O fluxo de dados do sistema foi definido de modo a manter a comunicação em campo simples e compatível com as restrições dos dispositivos embarcados, ao mesmo tempo em que garante o encaminhamento das informações para uma infraestrutura capaz de recebê-las e armazená-las. Esse fluxo começa nos nós sensores e atuadores, responsáveis por coletar dados do ambiente e gerar mensagens curtas com as informações de interesse da aplicação.
-
-% Após a coleta, os dados são transmitidos pelos nós por meio da rede LoRaWAN e recebidos pelo gateway. Além do conteúdo principal da mensagem, como os valores de temperatura e luminosidade, o sistema considera também campos auxiliares necessários à identificação e ao acompanhamento da comunicação, como o identificador do dispositivo, o contador de mensagens e, quando possível, informações sobre o estado do nó, como nível de bateria. Essa composição permite não apenas registrar a leitura realizada, mas também acompanhar o comportamento do sistema ao longo do tempo.
-
-% Ao receber a mensagem, o gateway organiza o payload e acrescenta metadados associados à recepção, como instante de recebimento, identificação do gateway e indicadores de qualidade do enlace, como RSSI e SNR. Em seguida, essas informações são encaminhadas ao backend por meio de uma requisição HTTP sobre rede Wi-Fi. Antes do armazenamento, a requisição deve passar por um mecanismo simples de autenticação, com o objetivo de restringir o envio de dados a gateways autorizados.
-
-% No backend, os dados recebidos são persistidos juntamente com os metadados de comunicação. Essa decisão é importante porque o sistema não depende apenas dos valores coletados pelos sensores, mas também do contexto em que cada mensagem foi transmitida e recebida. Informações como origem, instante de recepção, sequência de envio e qualidade do sinal ampliam a capacidade de rastrear o funcionamento da rede e tornam a base armazenada mais útil para etapas posteriores de segurança e análise.
-
-% Com essa organização, o fluxo de dados passa a conectar de forma clara os quatro blocos principais da arquitetura: nó sensor/atuador, gateway, backend/API e persistência. Além de atender à necessidade básica de coleta e armazenamento, esse fluxo também prepara a infraestrutura para a incorporação futura de mecanismos de criptografia leve e para o uso de técnicas de aprendizado de máquina voltadas à análise do comportamento da rede e à detecção de anomalias.
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Diretrizes para a implementação da infraestrutura}
-
-% A implementação da infraestrutura proposta foi planejada de forma compatível com o escopo acadêmico do trabalho e com as restrições práticas do projeto. Por essa razão, a continuidade da solução considera um protótipo reduzido, com número limitado de nós e um gateway, preservando os elementos centrais da arquitetura sem exigir uma implantação em larga escala.
-
-% Para a comunicação em campo, a proposta considera o uso de placas com suporte integrado a LoRa, de modo a simplificar a montagem do protótipo e reduzir a complexidade de integração entre módulos. Os nós serão responsáveis pela coleta e transmissão dos dados do ambiente, enquanto o gateway, baseado em ESP32, atuará como ponto de recepção e encaminhamento para a infraestrutura de backend.
-
-% Na etapa de integração com a infraestrutura, o gateway utilizará conectividade Wi-Fi e realizará o envio das informações ao backend por meio de requisições HTTP. A camada de aplicação deverá disponibilizar uma API com autenticação, permitindo que apenas gateways autorizados possam registrar dados no sistema. Após o recebimento, as mensagens e seus metadados associados deverão ser armazenados em banco de dados, formando a base de informações necessária ao funcionamento e à análise do sistema.
-
-% A operação da infraestrutura é pensada de forma orientada a evento. Assim, sempre que uma nova mensagem for recebida, o gateway deverá encaminhá-la ao backend, sem depender de transmissões artificiais contínuas. Em situações de indisponibilidade temporária da conexão com a rede, admite-se o uso de armazenamento local temporário, com reenvio posterior, apenas como mecanismo de apoio à robustez da comunicação.
-
-% Essa organização define uma infraestrutura inicial simples, suficiente para estabelecer a comunicação entre os dispositivos de campo e a camada de persistência. Sobre essa base, planeja-se posteriormente a incorporação dos mecanismos de criptografia leve discutidos neste trabalho, bem como o uso dos dados armazenados em procedimentos de análise por aprendizado de máquina.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -475,7 +411,6 @@ Médio (RMSE). Essas métricas quantificam a magnitude média dos erros de
 previsão, sendo o RMSE mais sensível a erros grandes e pontuais, e o MAE 
 mais robusto a \textit{outliers} \cite{hyndman2021}.
 
-
 Formalmente, o Erro Absoluto Médio é calculado como:
 
 \[
@@ -576,49 +511,7 @@ Em etapas posteriores, a validação passa a incluir a incorporação da camada 
 
 A organização dessas atividades em etapas também tem a função de alinhar a evolução técnica da solução ao cronograma do projeto. Em um primeiro momento, concentram-se os esforços na definição e integração da infraestrutura básica. Em seguida, a continuidade do trabalho contempla a inserção progressiva das demais frentes, de modo que a arquitetura possa ser avaliada em níveis crescentes de complexidade.
 
-Essa organização permite que cada etapa produza uma base para a etapa seguinte, reduzindo retrabalho e favorecendo a coerência do desenvolvimento como um todo. Dessa forma, o cronograma deixa de ser apenas uma divisão temporal de tarefas e passa a refletir a lógica de construção incremental da proposta.
-
-% \section{Projeto do ambiente experimental}
-
-% O ambiente experimental previsto para este trabalho foi concebido com o objetivo de viabilizar a integração dos principais elementos da arquitetura proposta em uma escala compatível com o escopo do projeto. Em vez de reproduzir um cenário de implantação ampla, a proposta considera um ambiente reduzido, suficiente para observar o comportamento da comunicação entre os dispositivos de campo, o gateway e a infraestrutura de backend.
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Organização do ambiente experimental}
-
-% O ambiente experimental foi organizado de forma a permitir a observação da arquitetura proposta em uma escala reduzida e controlada. Em vez de reproduzir um cenário amplo de implantação, a proposta considera um arranjo suficiente para acompanhar a comunicação entre os dispositivos de campo, o encaminhamento das mensagens e o registro das informações na infraestrutura de backend.
-
-% Para isso, o ambiente é estruturado em dois níveis principais. No primeiro, situam-se os elementos associados à coleta e à transmissão dos dados em campo. No segundo, concentram-se os elementos responsáveis pelo recebimento, autenticação e armazenamento das mensagens. Essa separação permite observar com mais clareza o papel de cada etapa da comunicação, sem misturar as limitações do trecho embarcado com as funções da camada de aplicação.
-
-% Além de simplificar a integração dos componentes, essa organização favorece a análise do sistema de forma progressiva. A infraestrutura pode ser observada desde a geração da mensagem até sua persistência, permitindo verificar se o comportamento esperado da arquitetura está sendo mantido ao longo do caminho. Isso também facilita a identificação de pontos de falha, gargalos de comunicação e limitações práticas da integração entre os blocos do sistema.
-
-% Outro aspecto importante dessa organização é a adoção de uma operação orientada a evento. Assim, o ambiente experimental é pensado para reagir à geração e ao recebimento de mensagens, e não para depender de tráfego contínuo ou de mecanismos artificiais de comunicação. Essa escolha torna o ambiente mais compatível com o tipo de aplicação considerado no trabalho e com as restrições típicas de sistemas embarcados alimentados por bateria.
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Etapas de integração da infraestrutura}
-
-% A integração da infraestrutura no ambiente experimental foi organizada em etapas sucessivas, de modo a permitir a evolução gradual da solução e a observação de cada parte do sistema sobre uma base já estabelecida. Essa organização busca reduzir a complexidade da integração inicial e facilitar a identificação de limitações e dependências entre comunicação, persistência, segurança e análise de dados.
-
-% A primeira etapa concentra-se na comunicação básica entre os dispositivos de campo, o gateway e a camada de backend. Nesse momento, o objetivo é garantir o funcionamento do fluxo principal do sistema, permitindo que os dados coletados pelos nós sejam recebidos, encaminhados e entregues à infraestrutura de aplicação. Essa etapa define a base operacional mínima da proposta e permite verificar a consistência da comunicação fim a fim.
-
-% Na segunda etapa, a integração passa a incluir de forma mais completa a infraestrutura de backend e a persistência dos dados. O foco, nesse ponto, está no recebimento autenticado das mensagens, no armazenamento dos valores coletados e no registro dos metadados associados à comunicação. Com isso, forma-se uma base estruturada de informações, necessária tanto para o acompanhamento do funcionamento do sistema quanto para as etapas posteriores do trabalho.
-
-% Em seguida, considera-se a incorporação da camada criptográfica, com foco na proteção do payload gerado pelos nós de campo por meio do padrão Ascon. A adoção dessa etapa após a consolidação da infraestrutura básica permite observar a inserção da segurança sem alterar a organização principal da arquitetura já definida.
-
-% Na etapa posterior, os dados persistidos passam a ser explorados sob a perspectiva de aprendizado de máquina. Nessa fase, tanto os dados de aplicação quanto os metadados de comunicação tornam-se relevantes para análises futuras do comportamento da rede e para a investigação de padrões associados a anomalias.
-
-% Por fim, a integração do ambiente experimental considera a observação conjunta dessas frentes, reunindo comunicação, persistência, segurança e análise dentro da mesma arquitetura. Essa progressão permite tratar a solução de forma incremental, mantendo clareza na construção do protótipo e coerência entre os diferentes elementos que compõem o sistema proposto.
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \subsection{Delimitação do escopo experimental}
-
-% O ambiente experimental definido neste trabalho tem como finalidade principal viabilizar a integração e a observação da arquitetura proposta em condições controladas. Por essa razão, seu escopo não está voltado à reprodução de uma implantação real em larga escala, mas à verificação do funcionamento dos elementos centrais da solução e de sua interação ao longo do fluxo de comunicação.
-
-% Essa delimitação permite concentrar o estudo em aspectos diretamente relacionados aos objetivos do trabalho, como a comunicação entre os nós e o gateway, o encaminhamento das mensagens ao backend, o registro de metadados e a persistência das informações. Com isso, torna-se possível observar o comportamento básico da infraestrutura sem introduzir, neste momento, a complexidade de um número elevado de dispositivos, de múltiplos gateways ou de uma operação distribuída em maior escala.
-
-% Também é importante destacar que o ambiente experimental não pretende, por si só, esgotar todas as possibilidades de avaliação da solução proposta. Seu papel é fornecer uma base consistente para a continuidade do trabalho, permitindo a incorporação progressiva dos mecanismos de criptografia leve e das estratégias de análise por aprendizado de máquina. Dessa forma, o ambiente é tratado como um suporte à investigação da arquitetura, e não como uma representação completa de todos os cenários de uso possíveis.
+Essa organização permite que cada etapa produza uma base para a etapa seguinte, reduzindo retrabalho e favorecendo a coerência do desenvolvimento como um todo.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

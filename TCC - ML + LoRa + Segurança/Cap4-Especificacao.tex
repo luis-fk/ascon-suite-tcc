@@ -1,9 +1,5 @@
 \chapter{Especificação de Requisitos} \label{cap:especificacao}
 
-%Definir e descrever os requisitos do sistema.
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -18,7 +14,7 @@ A partir do gateway, a comunicação passa a utilizar Wi-Fi e requisições HTTP
 
 Além dos dados de aplicação, como temperatura e luminosidade, a arquitetura prevê a persistência de metadados relevantes para o acompanhamento da comunicação, incluindo informações de origem, sequência, recepção e qualidade do enlace. Essa escolha atende aos requisitos RF5 e RF7, além de contribuir para a rastreabilidade da operação, conforme estabelecido em RNF6. A mesma base persistida também prepara a infraestrutura para a incorporação posterior de mecanismos de criptografia leve e de análise por aprendizado de máquina, em conformidade com RNF7 e RNF8.
 
-A Figura~\ref{fig:arquitetura-especificada} apresenta a arquitetura técnica especificada para o sistema. A partir dessa organização, as subseções seguintes detalham os requisitos funcionais e não funcionais da infraestrutura proposta, que fundamentam e justificam as decisões arquiteturais adotadas.
+A Figura~\ref{fig:arquitetura-especificada} apresenta a arquitetura técnica especificada para o sistema. As subseções seguintes detalham os requisitos funcionais e não funcionais da infraestrutura proposta.
 
 \begin{figure}[htb]
   \caption{\label{fig:arquitetura-especificada}Arquitetura especificada do sistema proposto.}
@@ -32,7 +28,7 @@ A Figura~\ref{fig:arquitetura-especificada} apresenta a arquitetura técnica esp
 
 \subsection{Requisitos funcionais da infraestrutura proposta}
 
-Os requisitos funcionais da infraestrutura proposta descrevem os comportamentos esperados da arquitetura do sistema, considerando a coleta, o encaminhamento, a autenticação e a persistência das informações produzidas na rede de campo.
+Os requisitos funcionais da infraestrutura proposta descrevem os comportamentos esperados da arquitetura quanto à coleta, ao encaminhamento, à autenticação e à persistência das informações produzidas na rede de campo.
 
 \begin{enumerate}
     \item[RF1.] O sistema deve permitir que os nós de campo coletem e transmitam dados de aplicação, incluindo, no protótipo previsto, informações de temperatura e luminosidade.
@@ -110,7 +106,6 @@ continuidade, conforme discutido na Seção~7.3.
 
 \end{enumerate}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Requisitos Não Funcionais}
@@ -127,9 +122,7 @@ continuidade, conforme discutido na Seção~7.3.
 
 \end{enumerate}
 
-Essa orientação fortalece a coerência do trabalho como um todo. Em vez de separar artificialmente a fase de modelagem da fase de implantação, o desenvolvimento já considera que a utilidade prática dos modelos depende de um equilíbrio entre eficácia de detecção e viabilidade de execução em dispositivos restritos. Assim, a implementação proposta dialoga diretamente com a etapa posterior de avaliação energética e computacional.
-
-Sob essa perspectiva, a comparação entre modelos não deverá considerar apenas métricas tradicionais de desempenho, mas também aspectos como simplicidade estrutural, custo computacional, volume de memória.
+O desenvolvimento já considera que a utilidade prática dos modelos depende de um equilíbrio entre eficácia de detecção e viabilidade de execução em dispositivos restritos, dialogando com a etapa posterior de avaliação energética e computacional. A comparação entre modelos não deverá considerar apenas métricas tradicionais de desempenho, mas também aspectos como simplicidade estrutural, custo computacional e volume de memória.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
