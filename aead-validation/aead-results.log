@@ -1,0 +1,21 @@
+===============================================================
+ Ascon-128a (v1.2) -- AEAD bit-flipping (MitM) on-device (ESP32)
+===============================================================
+Placa       : ESP32
+Captura     : Monitor Serial do Arduino IDE @ 115200 baud
+Metodo      : pacote valido (controle) + flip de CADA bit em
+              ciphertext, dados associados (AD) e tag de autenticacao.
+              Cada bit virado deve fazer a decifragem falhar (r < 0).
+
+--- Saida da placa ---
+=== Ascon-128a AEAD bit-flipping (Secao 3.4.2) ===
+Pacote valido: 28 B de texto claro + 26 B de AD -> 44 B (ciphertext || tag)
+Controle (pacote intacto): ACEITO, texto claro recuperado (OK)
+
+Adulteracao por bit-flipping (cada bit deve ser REJEITADO):
+  Ciphertext : 224/224 rejeitados
+  AD         : 208/208 rejeitados
+  Tag        : 128/128 rejeitados
+
+Total: 560/560 adulteracoes de 1 bit rejeitadas
+>>> AEAD OK: pacote intacto aceito, toda adulteracao rejeitada <<<
