@@ -1,0 +1,23 @@
+===============================================================
+ Ascon-128a (v1.2) — Known Answer Tests (KAT) validation log
+===============================================================
+Date            : Tue Jun 16 16:58:50 -03 2026
+Host            : Darwin 25.5.0 arm64
+Compiler        : Apple clang version 16.0.0 (clang-1600.0.26.3)
+ascon-suite ver : 0.3.0
+Repo commit     : c41729a
+Vector file     : ASCON-128a.txt (1089 vectors)
+
+--- [1] Exhaustive run: all vectors encrypted & compared to reference ---
+$ kat ASCON-128a - < ASCON-128a.txt
+ASCON-128a: 1089 tests succeeded, 0 tests failed
+exit code: 0
+
+--- [2] Regeneration cross-check (kat-gen output diffed vs reference) ---
+$ kat-gen ASCON-128a - | diff - ASCON-128a.txt
+IDENTICAL to reference (exit 0)
+
+--- [3] CTest suite (C, C++, SIV, masked variants) ---
+100% tests passed, 0 tests failed out of 14
+
+Total Test time (real) =   0.12 sec
