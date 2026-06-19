@@ -1,0 +1,41 @@
+===============================================================
+ Ascon-128a (v1.2) -- memoria e tempo (ESP32, Secao 3.4.3)
+===============================================================
+Placa   : ESP32 @ 240 MHz
+Captura : Monitor Serial do Arduino IDE @ 115200 baud
+Medicao : ciclos lidos do contador CCOUNT (ESP.getCycleCount()),
+          com interrupcoes desabilitadas durante cada cifragem
+          (portENTER_CRITICAL) para eliminar ruido de ISR.
+
+--- Saida da placa ---
+=== Ascon-128a: memoria e tempo (Secao 3.4.3) ===
+CPU: 240 MHz
+Estado (ascon128a_state_t): 80 bytes
+
+[Memoria]
+  Heap livre antes/depois: 333320 / 333320 B (delta 0 B)
+  Heap minimo antes/depois: 327724 / 327724 B (sem alocacao dinamica)
+  Folga de pilha antes/depois: 7036 / 7036 (consumo aprox. 0)
+
+[Tempo de cifragem por tamanho]
+  16 B: min 6117 | max 6400 | media 6117.2 ciclos (~25.49 us) | desvio 6.33 | spread 283 ciclos
+  32 B: min 7214 | max 7219 | media 7214.0 ciclos (~30.06 us) | desvio 0.30 | spread 5 ciclos
+  64 B: min 9408 | max 9414 | media 9408.1 ciclos (~39.20 us) | desvio 0.41 | spread 6 ciclos
+
+[Canal colateral por tempo - 16 B, chave/conteudo distintos]
+  16 B: min 6117 | max 6122 | media 6117.0 ciclos (~25.49 us) | desvio 0.28 | spread 5 ciclos
+  variacao relativa (desvio/media): 0.005 %
+  minimo invariante: 6117 ciclos (mesmo piso para chaves/conteudos distintos)
+
+>>> Medicoes concluidas <<<
+
+--- Memoria de programa (Flash), via compilador ---
+Com a biblioteca Ascon : 294352 bytes (22%)
+Sem a biblioteca        : 287304 bytes (21%)   (chamadas comentadas; o linker
+                                                 descarta a lib via gc-sections)
+Footprint Ascon-128a    : 7048 bytes (~6.9 KiB) de Flash
+
+Nota: a diferenca de "Global variables" (22268 -> 22092 = 176 B) corresponde aos
+buffers de teste do sketch (key+nonce+pt+ct = 16+16+64+80 = 176 B) descartados
+quando as chamadas sao comentadas -- NAO e RAM estatica da biblioteca. O custo de
+RAM real do Ascon: zero alocacao dinamica + 80 B de estado interno.
