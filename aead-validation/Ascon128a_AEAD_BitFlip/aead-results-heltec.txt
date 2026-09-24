@@ -1,0 +1,124 @@
+�ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0x29 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x10cc
+load:0x403c8700,len:0xc2c
+load:0x403cb700,len:0x30b0
+entry 0x403c88b8
+
+=== Ascon-128a AEAD: rejeicao de adulteracao (Secao 3.4.2) ===
+Bateria exaustiva e determinista, repetida por formato de pacote.
+
+--- PT=0  AD=26  ->  pacote de 16 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 0/0 rejeitados
+  AD         : 208/208 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 64/64 rejeitados
+  Byte (8b)  : 16/16 rejeitados
+  Byte zero  : 16/16 rejeitados
+  2 distant  : 8/8 rejeitados
+  Truncado   : 15/15 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 15/15 rejeitados
+      subtotal: 602/602 rejeitados, maior sequencia 0 B
+
+--- PT=5  AD=0  ->  pacote de 21 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 40/40 rejeitados
+  AD         : 0/0 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 84/84 rejeitados
+  Byte (8b)  : 21/21 rejeitados
+  Byte zero  : 21/21 rejeitados
+  2 distant  : 10/10 rejeitados
+  Truncado   : 20/20 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 20/20 rejeitados
+      subtotal: 476/476 rejeitados, maior sequencia 0 B
+
+--- PT=16 AD=16  ->  pacote de 32 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 128/128 rejeitados
+  AD         : 128/128 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 128/128 rejeitados
+  Byte (8b)  : 32/32 rejeitados
+  Byte zero  : 32/32 rejeitados
+  2 distant  : 16/16 rejeitados
+  Truncado   : 31/31 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 31/31 rejeitados
+      subtotal: 786/786 rejeitados, maior sequencia 0 B
+
+--- PT=17 AD=16  ->  pacote de 33 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 136/136 rejeitados
+  AD         : 128/128 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 132/132 rejeitados
+  Byte (8b)  : 33/33 rejeitados
+  Byte zero  : 33/33 rejeitados
+  2 distant  : 16/16 rejeitados
+  Truncado   : 32/32 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 32/32 rejeitados
+      subtotal: 802/802 rejeitados, maior sequencia 0 B
+
+--- PT=28 AD=26  ->  pacote de 44 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 224/224 rejeitados
+  AD         : 208/208 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 176/176 rejeitados
+  Byte (8b)  : 44/44 rejeitados
+  Byte zero  : 44/44 rejeitados
+  2 distant  : 22/22 rejeitados
+  Truncado   : 43/43 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 42/42 rejeitados
+      subtotal: 1063/1063 rejeitados, maior sequencia 0 B
+
+--- PT=32 AD=32  ->  pacote de 48 B  |  controle: ACEITO
+  [A] Inversao de 1 bit:
+  Ciphertext : 256/256 rejeitados
+  AD         : 256/256 rejeitados
+  Tag        : 128/128 rejeitados
+  Nonce      : 128/128 rejeitados
+  [B] Alem de 1 bit:
+  2 bits     : 192/192 rejeitados
+  Byte (8b)  : 48/48 rejeitados
+  Byte zero  : 48/48 rejeitados
+  2 distant  : 24/24 rejeitados
+  Truncado   : 47/47 rejeitados
+  Estendido  : 4/4 rejeitados
+  Reordenado : 47/47 rejeitados
+      subtotal: 1178/1178 rejeitados, maior sequencia 0 B
+
+===============================================================
+Formatos testados : 6
+Controles aceitos : 6/6
+Adulteracoes      : 4907/4907 rejeitadas
+
+Fragmentos do texto claro deixados no buffer de saida:
+  maior sequencia encontrada : 0 byte(s)
+  casos com >= 2 bytes       : 0
+  casos com >= 3 bytes       : 0
+  casos com >= 4 bytes       : 0
+
+>>> AEAD OK: intacto aceito, toda adulteracao rejeitada, nenhum vazamento <<<
+
+Nota: a repeticao (replay) de um pacote intacto NAO e detectavel pelo
+AEAD; depende de verificacao de frescor do nonce no receptor.
