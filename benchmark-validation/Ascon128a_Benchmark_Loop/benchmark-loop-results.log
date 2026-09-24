@@ -1,0 +1,55 @@
+===============================================================
+ Ascon-128a -- reprodutibilidade entre execucoes (Secao 3.4.3)
+===============================================================
+Placa   : ESP32 @ 240 MHz
+Captura : Monitor Serial do Arduino IDE @ 115200 baud
+Medicao : 100 execucoes independentes por tamanho; cada execucao faz
+          2000 medidas com interrupcoes desabilitadas durante a cifragem
+          (portENTER_CRITICAL). Metrica entre execucoes: o "piso" de cada
+          execucao (menor valor medido nela).
+Duracao : ~23 s (16 B ~6 s, 32 B ~7 s, 64 B ~10 s)
+
+--- Saida da placa ---
+=== Ascon-128a: reprodutibilidade entre execucoes (Secao 3.4.3) ===
+CPU: 240 MHz
+N (execucoes por tamanho): 100
+Medidas por execucao: 2000
+
+Rodando (cada '.' = 1 execucao):
+  16 B: ....................................................................................................
+  32 B: ....................................................................................................
+  64 B: ....................................................................................................
+
+--- Entre execucoes (metrica: piso de ciclos por execucao) ---
+  16 B  piso min 6114 | piso max 6114 | spread 0 | media dos pisos 6114.0 (~25.48 us) | rodadas no piso 100/100
+  32 B  piso min 7211 | piso max 7211 | spread 0 | media dos pisos 7211.0 (~30.05 us) | rodadas no piso 100/100
+  64 B  piso min 9405 | piso max 9405 | spread 0 | media dos pisos 9405.0 (~39.19 us) | rodadas no piso 100/100
+
+--- Dentro de cada execucao (desvio medio das medidas) ---
+  16 B: desvio medio 0.36 ciclos
+  32 B: desvio medio 0.28 ciclos
+  64 B: desvio medio 0.36 ciclos
+
+>>> Piso identico em todas as execucoes: medicao reprodutivel ate o ciclo <<<
+
+--- Analise ---
+Entre execucoes: spread 0 em todos os tamanhos e 100/100 execucoes no piso.
+A medicao e reprodutivel ate o ciclo -- confirma que os valores da Secao 5.2.3
+nao decorrem de uma medicao isolada.
+
+Dentro de cada execucao: desvio medio <= 0,36 ciclo sobre ~6.114-9.405 ciclos
+(< 0,006%), coerente com o teste de tempo constante da Secao 5.2.3.
+
+Comparacao com os firmwares de execucao unica:
+
+  firmware                              16 B   32 B   64 B | base  cic/bloco
+  single-run (Sec. 5.2.3, IRQ off)      6117   7214   9408 | 5020    1097
+  single-run (Sec. 5.2.4, comparativo)  6115   7212   9406 | 5018    1097
+  loop 100x  (este teste,   IRQ off)    6114   7211   9405 | 5017    1097
+
+O incremento por bloco de 16 B e IDENTICO nos tres firmwares (1.097 ciclos); a
+diferenca (-3 ciclos em relacao a Sec. 5.2.3, constante nos tres tamanhos)
+concentra-se na parcela FIXA de inicializacao. Um desvio constante, independente
+do tamanho do payload, e atribuivel a geracao de codigo (alinhamento/alocacao de
+registradores) entre firmwares distintos, e nao ao algoritmo -- que reproduz
+exatamente o mesmo custo marginal por bloco.

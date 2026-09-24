@@ -1,0 +1,64 @@
+===============================================================
+ Ascon-128a (sw) vs AES-128-GCM (hw) -- reprodutibilidade da razao
+===============================================================
+Placa   : ESP32 @ 240 MHz
+Captura : Monitor Serial do Arduino IDE @ 115200 baud
+Medicao : 100 execucoes independentes por tamanho (300 no total); cada
+          execucao faz 2000 medidas de cada algoritmo. O driver de AES protege
+          o periferico com um SPINLOCK e ja entra em secao critica durante a
+          operacao de bloco, entao NAO se desabilitam interrupcoes em volta da
+          chamada; usa-se o MINIMO de ciclos (piso livre de interrupcao) dos
+          DOIS algoritmos, para comparacao justa.
+Duracao : ~54 s (16 B ~14 s, 32 B ~17 s, 64 B ~23 s)
+
+--- Saida da placa ---
+=== Ascon-128a (sw) vs AES-128-GCM (hw): reprodutibilidade da razao ===
+CPU: 240 MHz
+N (execucoes por tamanho): 100
+Medidas por execucao: 2000
+Latencia: minimo de ciclos (piso livre de interrupcao) dos dois algoritmos.
+
+Sanidade AES-GCM: OK (cifra/decifra/tag validam)
+
+Rodando (cada '.' = 1 execucao; leva cerca de 1 minuto):
+  16 B: ....................................................................................................
+  32 B: ....................................................................................................
+  64 B: ....................................................................................................
+
+--- Entre execucoes (piso de ciclos por execucao e razao) ---
+  16 B
+    Ascon-128a : piso min 6115 | piso max 6115 | spread 0 | media 6115.0 (~25.48 us) | rodadas no piso 100/100
+    AES-128-GCM: piso min 8541 | piso max 8541 | spread 0 | media 8541.0 (~35.59 us) | rodadas no piso 100/100
+    razao AES/Ascon: min 1.397 | max 1.397 | media 1.397 | Ascon mais rapido em 100/100 rodadas
+  32 B
+    Ascon-128a : piso min 7212 | piso max 7212 | spread 0 | media 7212.0 (~30.05 us) | rodadas no piso 100/100
+    AES-128-GCM: piso min 10650 | piso max 10650 | spread 0 | media 10650.0 (~44.38 us) | rodadas no piso 100/100
+    razao AES/Ascon: min 1.477 | max 1.477 | media 1.477 | Ascon mais rapido em 100/100 rodadas
+  64 B
+    Ascon-128a : piso min 9406 | piso max 9406 | spread 0 | media 9406.0 (~39.19 us) | rodadas no piso 100/100
+    AES-128-GCM: piso min 14868 | piso max 14868 | spread 0 | media 14868.0 (~61.95 us) | rodadas no piso 100/100
+    razao AES/Ascon: min 1.581 | max 1.581 | media 1.581 | Ascon mais rapido em 100/100 rodadas
+
+Ascon mais rapido que AES-GCM em 300/300 execucoes (todos os tamanhos)
+>>> Vantagem do Ascon reproduzida em todas as execucoes <<<
+
+--- Analise ---
+Reproducao EXATA dos valores da Secao 5.2.4, ciclo a ciclo:
+
+  tamanho   Ascon (Tab. 5.2.4 / loop)   AES-GCM (Tab. 5.2.4 / loop)   razao
+   16 B          6115 / 6115                 8541 / 8541          1,40 / 1,397
+   32 B          7212 / 7212                10650 / 10650         1,48 / 1,477
+   64 B          9406 / 9406                14868 / 14868         1,58 / 1,581
+
+Spread 0 para os dois algoritmos em todos os tamanhos; 100/100 execucoes no piso
+em cada caso; Ascon com o menor piso em 300/300 execucoes.
+
+Observacao: diferente do loop do Ascon isolado (que ficou 3 ciclos abaixo da
+Secao 5.2.3, por diferenca de geracao de codigo entre firmwares), aqui os pisos
+coincidem exatamente com os da Secao 5.2.4 -- o caminho de medicao deste sketch
+e o mesmo do comparativo de execucao unica (sem secao critica).
+
+Ressalva que permanece valida: no ESP32 classico o GCM nao e 100% hardware (so o
+bloco AES; o GHASH e software). Entre os sete alvos do ESP-IDF v5.1.4, apenas o
+ESP32-S2 declara SOC_AES_SUPPORT_GCM, e mesmo nele o Kconfig da Espressif diz que
+"GHASH calculation is still done in software". O S3 e o C3 tem DMA no AES, nao GCM.
