@@ -1,0 +1,84 @@
+===============================================================
+ O GCM e acelerado por hardware neste ESP32? -- verificacao
+===============================================================
+Placa   : ESP32 DevKit V1 / modulo ESP32-WROOM-32 (ESP32 classico),
+          USB-serial CP2102, regulador LDO. CPU @ 240 MHz.
+Captura : Monitor Serial do Arduino IDE @ 115200 baud
+Objetivo: comprovar (ou refutar) a afirmacao da Secao 5.2.4 de que, no
+          ESP32 classico, so o bloco AES roda no acelerador e o GHASH
+          permanece em software.
+
+--- Saida da placa ---
+=== Verificacao: o GCM e acelerado por hardware neste ESP32? ===
+CPU: 240 MHz
+Alvo (CONFIG_IDF_TARGET): esp32
+
+[1] Capacidade declarada pelo SDK (macros de compilacao)
+  (soc/soc_caps.h encontrado e incluido)
+  SOC_AES_SUPPORT_GCM: nao definido   <- acelerador AES SEM suporte a GCM
+  SOC_AES_SUPPORT_DMA: nao definido
+  CONFIG_MBEDTLS_HARDWARE_AES: DEFINIDO   <- bloco AES pelo hardware
+  CONFIG_MBEDTLS_HARDWARE_GCM: nao definido
+  MBEDTLS_AES_ALT: DEFINIDO   <- AES do mbedTLS substituido pelo port do ESP
+  MBEDTLS_GCM_ALT: DEFINIDO   <- GCM do mbedTLS substituido pelo port do ESP
+
+[2] Evidencia empirica (custo marginal por bloco de 16 B)
+  Medindo... (piso de ciclos, 2000 medidas por ponto)
+
+  AES-CTR (so cifra AES)  : 16 B 2350 | 32 B 3262 | 64 B 5086 | por bloco 912.0 ciclos
+  AES-GCM (cifra + GHASH) : 16 B 8538 | 32 B 10647 | 64 B 14865 | por bloco 2109.0 ciclos
+  Ascon-128a (software)   : 16 B 6111 | 32 B 7208 | 64 B 9402 | por bloco 1097.0 ciclos
+
+  Custo do GHASH por bloco (GCM - CTR): 1197.0 ciclos (~4.99 us)
+  Proporcao GHASH / cifra AES: 1.31x
+
+--- Conclusao ---
+  O GHASH custa MILHARES de ciclos por bloco -- ordem de grandeza de
+  uma multiplicacao em GF(2^128) por tabelas, em SOFTWARE.
+  => confirma: o GCM NAO e totalmente acelerado por hardware aqui.
+
+--- Analise ---
+Os dois caminhos independentes concordam.
+
+[1] O SDK declara CONFIG_MBEDTLS_HARDWARE_AES (bloco AES no acelerador), mas NAO
+    declara SOC_AES_SUPPORT_GCM nem CONFIG_MBEDTLS_HARDWARE_GCM. No Kconfig do
+    ESP-IDF, MBEDTLS_HARDWARE_GCM "depends on SOC_AES_SUPPORT_GCM", logo nao pode
+    ser habilitada neste chip. (MBEDTLS_GCM_ALT DEFINIDO significa apenas que o
+    port do ESP substitui a implementacao do mbedTLS -- esse port usa o hardware
+    para o AES e calcula o GHASH em software.)
+
+[2] Decomposicao do custo marginal por bloco de 16 B:
+
+      AES-CTR  (so cifra AES, hardware)      912 ciclos/bloco
+      AES-GCM  (cifra + autenticacao)       2109 ciclos/bloco
+      ------------------------------------------------------
+      GHASH    (diferenca)                  1197 ciclos/bloco  (~4,99 us)
+
+    1197 ciclos e ordem de grandeza de multiplicacao em GF(2^128) por tabelas;
+    um GHASH em hardware custaria dezenas de ciclos. Confirma software.
+
+Resultados adicionais relevantes para a escrita:
+
+  * A autenticacao custa MAIS que a cifragem: GHASH/AES = 1,31x.
+  * O GHASH sozinho (1197) custa mais que o Ascon-128a INTEIRO (1097 ciclos/bloco,
+    cifrando E autenticando).
+  * Na cifragem PURA o acelerador de hardware e mais rapido que o Ascon
+    (912 contra 1097 ciclos/bloco). A desvantagem do AES-GCM vem inteiramente da
+    autenticacao em software -- e nao de o AES ser lento. Registrar isso torna o
+    comparativo da Secao 5.2.4 mais honesto e mais forte.
+
+Consistencia com as medicoes anteriores (inclinacoes IDENTICAS):
+
+  inclinacao Ascon  : 1097 ciclos/bloco  == Secoes 5.2.3 e 5.2.4
+  inclinacao AES-GCM: 2109 ciclos/bloco  == Secao 5.2.4
+
+  Os pisos ficam 4 (Ascon) e 3 (AES-GCM) ciclos abaixo dos publicados, deslocamento
+  CONSTANTE nos tres tamanhos -- o mesmo efeito de geracao de codigo entre firmwares
+  ja documentado na Secao 5.2.3. As inclinacoes, que e o que importa aqui, coincidem
+  exatamente.
+
+Referencia documental: Kconfig do componente mbedtls do ESP-IDF, que descreve
+MBEDTLS_HARDWARE_GCM como "partially hardware accelerated GCM" com "GHASH
+calculation ... still done in software"; e soc_caps.h, onde SOC_AES_SUPPORT_GCM
+esta ausente para o esp32 (presente apenas no esp32s2 entre as variantes
+verificadas). Citado no texto como \cite{espressif2025mbedtls}.
