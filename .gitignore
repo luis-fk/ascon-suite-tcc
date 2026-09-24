@@ -1,2 +1,5 @@
 *.swp
 build
+.claude
+TODO.md
+todo
