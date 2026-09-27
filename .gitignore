@@ -3,3 +3,8 @@ build
 .claude
 TODO.md
 todo
+DECISOES.md
+.DS_Store
+__pycache__/
+.vscode/
+.mypy_cache/
