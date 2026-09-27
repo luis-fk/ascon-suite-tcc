@@ -1,0 +1,226 @@
+=== Ascon-128a no ESP32: memoria, tempo e comparativo com AES-128-GCM (Secoes 3.4.3, 5.2.3 e 5.2.4) ===
+
+[0] Identificacao do build
+  Alvo (CONFIG_IDF_TARGET)   : esp32
+  ESP-IDF                    : 5.5.5
+  Core arduino-esp32         : 3.3.11
+  Chip                       : ESP32-D0WDQ6 rev 100, 2 nucleo(s), CPU a 240 MHz
+  Flash                      : chip de 4194304 bytes | sketch 316368 bytes | espaco livre para sketch 1310720 bytes
+  Estado do Ascon-128a       : 80 bytes (ascon128a_state_t)
+  Execucoes por tamanho      : 100 | medidas por execucao: 2000 | aquecimento: 16
+  Tamanhos de payload (bytes): 0, 2, 16, 23, 32, 64
+
+
+---------------------------------------------------------------
+[1] Autoteste (nada e medido se falhar)
+  Ascon-128a Count 529 (PT=16 AD=0) : cifra OK | decifra OK | tag adulterada recusada
+  Ascon-128a Count 545 (PT=16 AD=16): cifra OK | decifra OK | tag adulterada recusada
+  AES-128-GCM Test Case 2 (PT=16)   : cifra OK | decifra OK | tag adulterada recusada
+
+  Custo da primeira chamada no firmware (cache fria, 16 B, uma medida):
+      Ascon-128a cifra   53314 ciclos (222.14 us)
+      Ascon-128a decifra 18222 ciclos (75.92 us)
+      AES-128-GCM cifra  38983 ciclos (162.43 us)
+      AES-128-GCM decifra 10639 ciclos (44.33 us)
+
+---------------------------------------------------------------
+[2] Memoria
+  Heap livre antes e depois de uma operacao completa, por tamanho, e o MENOR valor que um
+  observador no outro nucleo viu enquanto ela rodava (uma alocacao feita e liberada dentro
+  da operacao so aparece ali).
+   0 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 76 amostras | sem alocacao
+   0 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 262 amostras | sem alocacao
+   0 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 283 amostras | sem alocacao
+   0 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 281 amostras | sem alocacao
+   2 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 268 amostras | sem alocacao
+   2 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 273 amostras | sem alocacao
+   2 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 278 amostras | sem alocacao
+   2 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 286 amostras | sem alocacao
+  16 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 269 amostras | sem alocacao
+  16 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 275 amostras | sem alocacao
+  16 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 278 amostras | sem alocacao
+  16 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 287 amostras | sem alocacao
+  23 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 269 amostras | sem alocacao
+  23 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 276 amostras | sem alocacao
+  23 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 280 amostras | sem alocacao
+  23 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 292 amostras | sem alocacao
+  32 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 270 amostras | sem alocacao
+  32 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 278 amostras | sem alocacao
+  32 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 281 amostras | sem alocacao
+  32 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 293 amostras | sem alocacao
+  64 B  Ascon-128a cifra     heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 274 amostras | sem alocacao
+  64 B  Ascon-128a decifra   heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 285 amostras | sem alocacao
+  64 B  AES-128-GCM cifra    heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 288 amostras | sem alocacao
+  64 B  AES-128-GCM decifra  heap antes 326912 | menor durante 326912 | depois 326912 (delta 0) | 305 amostras | sem alocacao
+
+  Pilha: marca d'agua lida dentro de uma tarefa dedicada de 8192 bytes, antes e depois da operacao (64 B, 8 chamadas):
+  (ESP-IDF devolve a marca em bytes; a marca inicial tem de ficar abaixo do tamanho da pilha)
+      Ascon-128a cifra     marca inicial 7888 | marca final 7548 | consumo da operacao 340 bytes
+      Ascon-128a decifra   marca inicial 7888 | marca final 7452 | consumo da operacao 436 bytes
+      AES-128-GCM cifra    marca inicial 7888 | marca final 7340 | consumo da operacao 548 bytes
+      AES-128-GCM decifra  marca inicial 7888 | marca final 7260 | consumo da operacao 628 bytes
+
+---------------------------------------------------------------
+[3] Tempo do Ascon-128a: 100 execucoes por tamanho e operacao, 2000 medidas cada, interrupcoes ligadas
+    (cada '.' e uma execucao; a metrica entre execucoes e o piso de cada uma)
+   0 B cifra   ....................................................................................................
+   0 B decifra ....................................................................................................
+      cifra  : piso min 5037 | piso max 5037 | spread 0 | media dos pisos 5037.0 (20.99 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 147.72
+      decifra: piso min 5256 | piso max 5256 | spread 0 | media dos pisos 5256.0 (21.90 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 140.65
+      cifra com interrupcoes desligadas, 1 execucao: piso 5039 | diferenca para o piso acima 2 ciclos
+   2 B cifra   ....................................................................................................
+   2 B decifra ....................................................................................................
+      cifra  : piso min 5181 | piso max 5181 | spread 0 | media dos pisos 5181.0 (21.59 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 150.25
+      decifra: piso min 5366 | piso max 5366 | spread 0 | media dos pisos 5366.0 (22.36 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 150.32
+      cifra com interrupcoes desligadas, 1 execucao: piso 5183 | diferenca para o piso acima 2 ciclos
+  16 B cifra   ....................................................................................................
+  16 B decifra ....................................................................................................
+      cifra  : piso min 6134 | piso max 6134 | spread 0 | media dos pisos 6134.0 (25.56 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 165.09
+      decifra: piso min 6646 | piso max 6646 | spread 0 | media dos pisos 6646.0 (27.69 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 170.04
+      cifra com interrupcoes desligadas, 1 execucao: piso 6136 | diferenca para o piso acima 2 ciclos
+  23 B cifra   ....................................................................................................
+  23 B decifra ....................................................................................................
+      cifra  : piso min 6521 | piso max 6521 | spread 0 | media dos pisos 6521.0 (27.17 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 164.02
+      decifra: piso min 6989 | piso max 6989 | spread 0 | media dos pisos 6989.0 (29.12 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 169.72
+      cifra com interrupcoes desligadas, 1 execucao: piso 6523 | diferenca para o piso acima 2 ciclos
+  32 B cifra   ....................................................................................................
+  32 B decifra ....................................................................................................
+      cifra  : piso min 7231 | piso max 7231 | spread 0 | media dos pisos 7231.0 (30.13 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 175.88
+      decifra: piso min 8036 | piso max 8036 | spread 0 | media dos pisos 8036.0 (33.48 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 187.94
+      cifra com interrupcoes desligadas, 1 execucao: piso 7233 | diferenca para o piso acima 2 ciclos
+  64 B cifra   ....................................................................................................
+  64 B decifra ....................................................................................................
+      cifra  : piso min 9425 | piso max 9425 | spread 0 | media dos pisos 9425.0 (39.27 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 200.72
+      decifra: piso min 10816 | piso max 10816 | spread 0 | media dos pisos 10816.0 (45.07 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 215.66
+      cifra com interrupcoes desligadas, 1 execucao: piso 9427 | diferenca para o piso acima 2 ciclos
+
+  Analise:
+      cifra  : parcela fixa extrapolada 5037 + 1097.0 ciclos por bloco de 16 B | desvio do ponto de 32 B: 0.00%
+      cifra  : parcela fixa MEDIDA (0 B) 5037 ciclos | diferenca para a extrapolada 0 ciclos
+      decifra: parcela fixa extrapolada 5256 + 1390.0 ciclos por bloco de 16 B | desvio do ponto de 32 B: 0.00%
+      decifra: parcela fixa MEDIDA (0 B) 5256 ciclos | diferenca para a extrapolada 0 ciclos
+      Granularidade de bloco (esperado: 2 B e 23 B custam menos que um bloco a mais que 0 B e 16 B):
+      cifra: 2 B - 0 B = 144 ciclos (72 por byte) | 23 B - 16 B = 387 ciclos (55 por byte) | 32 B - 16 B = 1097 ciclos (um bloco)
+
+---------------------------------------------------------------
+[4] Tempo constante do Ascon-128a: cifragem com interrupcoes desligadas, 2000 medidas por classe de entrada
+  16 B
+      rampa     : piso 6135 | media 6135.03 | max 6140 | desvio 0.23 | spread 5 ciclos
+      zeros     : piso 6135 | media 6135.03 | max 6142 | desvio 0.31 | spread 7 ciclos
+      uns (0xFF): piso 6135 | media 6135.03 | max 6139 | desvio 0.27 | spread 4 ciclos
+      alternado : piso 6135 | media 6135.04 | max 6140 | desvio 0.33 | spread 5 ciclos
+      hash      : piso 6135 | media 6135.04 | max 6139 | desvio 0.30 | spread 4 ciclos
+      entre classes: pisos de 6135 a 6135 (spread 0 ciclos) | medias de 6135.03 a 6135.04 (spread 0.01 ciclos, 0.0002% da media)
+  64 B
+      rampa     : piso 9426 | media 9426.06 | max 9432 | desvio 0.42 | spread 6 ciclos
+      zeros     : piso 9426 | media 9426.05 | max 9431 | desvio 0.34 | spread 5 ciclos
+      uns (0xFF): piso 9426 | media 9426.06 | max 9432 | desvio 0.42 | spread 6 ciclos
+      alternado : piso 9426 | media 9426.05 | max 9431 | desvio 0.34 | spread 5 ciclos
+      hash      : piso 9426 | media 9426.06 | max 9435 | desvio 0.42 | spread 9 ciclos
+      entre classes: pisos de 9426 a 9426 (spread 0 ciclos) | medias de 9426.05 a 9426.06 (spread 0.02 ciclos, 0.0002% da media)
+
+---------------------------------------------------------------
+[5] Comparativo Ascon-128a (software) x AES-128-GCM (mbedTLS): 100 execucoes por tamanho e operacao, alternadas
+    (interrupcoes ligadas nos dois; piso de cada execucao)
+   0 B cifra   ....................................................................................................
+   0 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 5037 | piso max 5037 | spread 0 | media dos pisos 5037.0 (20.99 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 145.78
+      AES-128-GCM: piso min 6497 | piso max 6497 | spread 0 | media dos pisos 6497.0 (27.07 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 174.21
+      razao AES/Ascon: min 1.290 | max 1.290 | media 1.290 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 5256 | piso max 5256 | spread 0 | media dos pisos 5256.0 (21.90 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 140.49
+      AES-128-GCM: piso min 6908 | piso max 6910 | spread 2 | media dos pisos 6910.0 (28.79 us) | execucoes no piso 1/100 | desvio medio dentro da execucao 211.49
+      razao AES/Ascon: min 1.314 | max 1.315 | media 1.315 | Ascon mais rapido em 100/100 execucoes
+  RESSALVA: piso do AES-GCM nao reproduzido em todas as execucoes (ver [5])
+   2 B cifra   ....................................................................................................
+   2 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 5181 | piso max 5181 | spread 0 | media dos pisos 5181.0 (21.59 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 148.98
+      AES-128-GCM: piso min 8174 | piso max 8174 | spread 0 | media dos pisos 8174.0 (34.06 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 192.13
+      razao AES/Ascon: min 1.578 | max 1.578 | media 1.578 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 5366 | piso max 5366 | spread 0 | media dos pisos 5366.0 (22.36 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 149.11
+      AES-128-GCM: piso min 8585 | piso max 8585 | spread 0 | media dos pisos 8585.0 (35.77 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 190.17
+      razao AES/Ascon: min 1.600 | max 1.600 | media 1.600 | Ascon mais rapido em 100/100 execucoes
+  16 B cifra   ....................................................................................................
+  16 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 6134 | piso max 6134 | spread 0 | media dos pisos 6134.0 (25.56 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 167.07
+      AES-128-GCM: piso min 8603 | piso max 8603 | spread 0 | media dos pisos 8603.0 (35.85 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 196.56
+      razao AES/Ascon: min 1.403 | max 1.403 | media 1.403 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 6646 | piso max 6646 | spread 0 | media dos pisos 6646.0 (27.69 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 171.47
+      AES-128-GCM: piso min 9014 | piso max 9014 | spread 0 | media dos pisos 9014.0 (37.56 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 201.20
+      razao AES/Ascon: min 1.356 | max 1.356 | media 1.356 | Ascon mais rapido em 100/100 execucoes
+  23 B cifra   ....................................................................................................
+  23 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 6521 | piso max 6521 | spread 0 | media dos pisos 6521.0 (27.17 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 166.01
+      AES-128-GCM: piso min 10454 | piso max 10454 | spread 0 | media dos pisos 10454.0 (43.56 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 217.35
+      razao AES/Ascon: min 1.603 | max 1.603 | media 1.603 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 6989 | piso max 6989 | spread 0 | media dos pisos 6989.0 (29.12 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 168.30
+      AES-128-GCM: piso min 10867 | piso max 10867 | spread 0 | media dos pisos 10867.0 (45.28 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 220.24
+      razao AES/Ascon: min 1.555 | max 1.555 | media 1.555 | Ascon mais rapido em 100/100 execucoes
+  32 B cifra   ....................................................................................................
+  32 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 7231 | piso max 7231 | spread 0 | media dos pisos 7231.0 (30.13 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 178.52
+      AES-128-GCM: piso min 10712 | piso max 10712 | spread 0 | media dos pisos 10712.0 (44.63 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 219.68
+      razao AES/Ascon: min 1.481 | max 1.481 | media 1.481 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 8036 | piso max 8036 | spread 0 | media dos pisos 8036.0 (33.48 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 186.37
+      AES-128-GCM: piso min 11123 | piso max 11124 | spread 1 | media dos pisos 11124.0 (46.35 us) | execucoes no piso 1/100 | desvio medio dentro da execucao 221.90
+      razao AES/Ascon: min 1.384 | max 1.384 | media 1.384 | Ascon mais rapido em 100/100 execucoes
+  RESSALVA: piso do AES-GCM nao reproduzido em todas as execucoes (ver [5])
+  64 B cifra   ....................................................................................................
+  64 B decifra ....................................................................................................
+      cifra:
+      Ascon-128a : piso min 9425 | piso max 9425 | spread 0 | media dos pisos 9425.0 (39.27 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 200.96
+      AES-128-GCM: piso min 14930 | piso max 14930 | spread 0 | media dos pisos 14930.0 (62.21 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 255.75
+      razao AES/Ascon: min 1.584 | max 1.584 | media 1.584 | Ascon mais rapido em 100/100 execucoes
+      decifra:
+      Ascon-128a : piso min 10816 | piso max 10816 | spread 0 | media dos pisos 10816.0 (45.07 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 215.71
+      AES-128-GCM: piso min 15341 | piso max 15341 | spread 0 | media dos pisos 15341.0 (63.92 us) | execucoes no piso 100/100 | desvio medio dentro da execucao 255.81
+      razao AES/Ascon: min 1.418 | max 1.418 | media 1.418 | Ascon mais rapido em 100/100 execucoes
+  Ascon mais rapido que o AES-GCM em 1200/1200 execucoes (todos os tamanhos, cifra e decifra)
+      Granularidade do AES-GCM (esperado: 2 B ~ 16 B e 23 B ~ 32 B, pois o CTR cifra blocos inteiros):
+      cifra: 2 B - 0 B = 1677 | 16 B - 2 B = 429 | 23 B - 16 B = 1851 | 32 B - 23 B = 258 ciclos
+
+---------------------------------------------------------------
+[6] O AES-GCM e acelerado por hardware neste chip?
+  [6a] O que o SDK declara (tempo de compilacao)
+  SOC_AES_SUPPORT_GCM         : ausente    <- acelerador AES sem assistencia a GCM
+  SOC_AES_SUPPORT_DMA         : ausente    <- a CPU alimenta o AES bloco a bloco
+  CONFIG_MBEDTLS_HARDWARE_AES : definida   <- bloco AES no periferico
+  CONFIG_MBEDTLS_HARDWARE_GCM : ausente    <- sem assistencia de hardware ao GCM
+
+  [6b] Evidencia empirica: custo marginal por bloco de 16 B, pisos de 100 execucoes
+  16 B CTR ....................................................................................................
+  32 B CTR ....................................................................................................
+  64 B CTR ....................................................................................................
+
+  AES-CTR (so cifra AES) : 16 B  2316 | 32 B  3141 | 64 B  4791 | por bloco   825.0 ciclos | linearidade 0.00%
+  AES-GCM (cifra + GHASH): 16 B  8603 | 32 B 10712 | 64 B 14930 | por bloco  2109.0 ciclos | linearidade 0.00%
+  Ascon-128a (software)  : 16 B  6134 | 32 B  7231 | 64 B  9425 | por bloco  1097.0 ciclos | linearidade 0.00%
+
+  Derivacoes (a subtracao GCM - CTR e exata: esp_aes_gcm.c chama esp_aes_crypt_ctr):
+      GHASH por bloco (GCM - CTR)               : 1284.0 ciclos (5.35 us)
+      Ascon-128a completo por bloco             : 1097.0 ciclos
+      GHASH / cifra AES                         : 1.56x
+      cifra AES medida / nucleo do TRM do ESP32 (15): 55x
+
+  Conclusao:
+      modelo linear valido (desvio maximo em 32 B: 0.00%).
+      o GHASH custa 1284 ciclos por bloco, 86x o nucleo do bloco AES: multiplicacao em GF(2^128) na CPU, ou seja, SOFTWARE.
+      => o GCM NAO e totalmente acelerado por hardware aqui.
+
+---------------------------------------------------------------
+[7] Resumo
+  Mensagem tipica de 23 B (dataset Tour Perret): Ascon cifra 6521 ciclos (27.17 us) | AES-GCM cifra 10454 ciclos (43.56 us) | razao 1.60
+  Custo por bloco de 16 B: Ascon 1097.0 | AES-GCM 2109.0 ciclos
+  Problemas: 0 | Ressalvas: 2
+
+>>> BENCHMARK OK: autoteste, memoria, tempo, comparativo e decomposicao sem problemas <<<
+>>> ha ressalvas acima (linhas 'RESSALVA'); o texto precisa mencionar cada uma <<<
