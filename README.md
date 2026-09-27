@@ -4,6 +4,19 @@ ASCON Suite
 This repository builds a number of useful cryptographic primitives
 around the ASCON permutation.
 
+Este fork (TCC Poli-USP)
+------------------------
+
+Fork da `ascon-suite` usado no trabalho de conclusão sobre segurança de
+enlaces LoRa com Ascon-128a em ESP32. Além da biblioteca original, contém:
+
+* [`kat-validation/`](kat-validation/) — vetores oficiais (KAT) do Ascon-128a na placa
+* [`aead-validation/`](aead-validation/) — rejeição de adulteração do AEAD, 4.907 casos, duas placas
+* [`benchmark-validation/`](benchmark-validation/) — memória, tempo, tempo constante e comparativo com AES-128-GCM
+* [`ascon-lora/`](ascon-lora/) — biblioteca `AsconSecure`, a camada de segurança para o enlace LoRa
+
+Cada pasta tem seu README. O restante deste arquivo é o README original.
+
 API's are provided for the following areas:
 
 * Authenticated Encryption with Associated Data (AEAD)
