@@ -1,0 +1,24 @@
+Sketch uses 277744 bytes (21%) of program storage space. Maximum is 1310720 bytes.
+
+=== Custo de Flash do Ascon-128a: USE_ASCON = 1
+Alvo (CONFIG_IDF_TARGET) : esp32
+ESP-IDF                  : 5.5.5
+Core arduino-esp32       : 3.3.11
+Chip                     : ESP32-D0WDQ6
+Sketch (getSketchSize)   : 277888 bytes
+Particao de aplicacao    : 1588608 bytes (sketch + espaco livre)
+Cifra: 32 bytes, decifra: 16 bytes, retorno 0, bytes 0x00 0x00 0x00
+>>> anote o valor de 'Sketch' e a linha 'Sketch uses' da IDE <<<
+
+
+Sketch uses 270944 bytes (20%) of program storage space. Maximum is 1310720 bytes.
+
+=== Custo de Flash do Ascon-128a: USE_ASCON = 0
+Alvo (CONFIG_IDF_TARGET) : esp32
+ESP-IDF                  : 5.5.5
+Core arduino-esp32       : 3.3.11
+Chip                     : ESP32-D0WDQ6
+Sketch (getSketchSize)   : 271088 bytes
+Particao de aplicacao    : 1581808 bytes (sketch + espaco livre)
+Cifra: 16 bytes, decifra: 16 bytes, retorno 0, bytes 0x00 0x00 0x00
+>>> anote o valor de 'Sketch' e a linha 'Sketch uses' da IDE <<<
