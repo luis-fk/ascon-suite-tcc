@@ -94,6 +94,26 @@ texto. Os principais: `ERR_AUTH` (*tag* inválida ou pacote alterado),
   fixo (medido em [`benchmark-validation/`](../benchmark-validation/)). A NVS
   aloca e libera internamente a cada gravação, fora da cifragem.
 
+## Medindo o tempo na integração
+
+Para ver o custo da camada com o rádio e o resto do sketch rodando, troque
+`ASCON_SECURE_TIMING` de 0 para 1 em `AsconSecure.h` e recompile os dois
+lados. Com `asconSecureLogTo(Serial)` ligado, cada `Pack` e cada `Open` bem
+sucedidos passam a imprimir uma linha:
+
+```
+asconSecure: cifra 23 B: 6540 ciclos (27.3 us) | chamada inteira: 7100 ciclos (29.6 us)
+asconSecure: decifra 23 B: 7010 ciclos (29.2 us) | chamada inteira: 2150000 ciclos (8958.3 us)
+```
+
+A primeira medida é só a operação do Ascon. A segunda é a chamada inteira da
+biblioteca, e inclui a gravação na NVS quando ela acontece, a cada 32 mensagens
+no emissor e em toda mensagem aceita no receptor, o que explica os milissegundos
+da segunda linha. São medidas únicas, com as interrupções ligadas, o que a
+aplicação de fato vê. Devem ficar iguais ou pouco acima dos pisos do
+[`benchmark-validation/`](../benchmark-validation/). Com a flag em 0 nada disso
+é compilado e a biblioteca fica idêntica à versão sem instrumentação.
+
 ## Limites conhecidos
 
 - O provisionamento imprime a chave na serial. Só na bancada, com o nó em mãos.
