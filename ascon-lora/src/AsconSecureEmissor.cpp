@@ -110,6 +110,10 @@ AsconSecureStatus asconSecureWrap(const uint8_t *payload, size_t payloadLength,
     *packetLength = 0;
   }
 
+#if ASCON_SECURE_TIMING
+  uint32_t callStart = ESP.getCycleCount();
+#endif
+
   if (!senderReady) {
     return ASCON_SECURE_ERR_NOT_READY;
   }
@@ -181,15 +185,25 @@ AsconSecureStatus asconSecureWrap(const uint8_t *payload, size_t payloadLength,
   memmove(cipherStart, payload, payloadLength);
 
   size_t cipherLength = 0;
+#if ASCON_SECURE_TIMING
+  uint32_t opStart = ESP.getCycleCount();
+#endif
   ascon128a_aead_encrypt(cipherStart, &cipherLength,
                          cipherStart, payloadLength,
                          header, headerLength,
                          nonce, senderKey);
+#if ASCON_SECURE_TIMING
+  uint32_t opCycles = ESP.getCycleCount() - opStart;
+#endif
 
   secureZero(nonce, sizeof(nonce));
 
   writeCounterBE(packet, counter);
   *packetLength = ASCON_SECURE_COUNTER_BYTES + cipherLength;
+
+#if ASCON_SECURE_TIMING
+  logTiming("cifra", payloadLength, opCycles, ESP.getCycleCount() - callStart);
+#endif
 
   return ASCON_SECURE_OK;
 }

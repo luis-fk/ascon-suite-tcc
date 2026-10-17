@@ -41,6 +41,10 @@ AsconSecureStatus loadSenderState();
 extern Print *logSink;
 void logStatus(const char *context, int peerId, AsconSecureStatus status);
 
+#if ASCON_SECURE_TIMING
+void logTiming(const char *operation, size_t bytes, uint32_t opCycles, uint32_t callCycles);
+#endif
+
 void     writeCounterBE(uint8_t *out, uint32_t value);
 uint32_t readCounterBE(const uint8_t *in);
 void     secureZero(void *memory, size_t length);

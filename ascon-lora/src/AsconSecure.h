@@ -35,6 +35,15 @@
 // Tamanho para o buffer de recepcao do radio.
 #define ASCON_SECURE_MAX_PACKET (ASCON_SECURE_MAX_PAYLOAD + ASCON_SECURE_OVERHEAD)
 
+// Instrumentacao de tempo. Com 1, Wrap e Unwrap (e portanto Pack e Open)
+// imprimem no log de asconSecureLogTo(), a cada mensagem, os ciclos e os
+// microssegundos da cifra e da chamada inteira. Com 0 nada disso e compilado.
+// Mesma regra do MAX_PAYLOAD: a biblioteca e compilada a parte, edite aqui.
+#ifdef ASCON_SECURE_TIMING
+#error "Nao defina ASCON_SECURE_TIMING no sketch: edite o valor em AsconSecure.h."
+#endif
+#define ASCON_SECURE_TIMING 1
+
 typedef enum {
   ASCON_SECURE_OK                  =   0,
   ASCON_SECURE_ERR_NOT_READY       =  -1,

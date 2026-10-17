@@ -23,6 +23,22 @@ void logStatus(const char *context, int peerId, AsconSecureStatus status)
   logSink->println(asconSecureStatusText(status));
 }
 
+#if ASCON_SECURE_TIMING
+void logTiming(const char *operation, size_t bytes, uint32_t opCycles, uint32_t callCycles)
+{
+  if (logSink == NULL) {
+    return;
+  }
+
+  float mhz = (float) getCpuFrequencyMhz();
+
+  logSink->printf("asconSecure: %s %u B: %u ciclos (%.1f us) | chamada inteira: %u ciclos (%.1f us)\n",
+                  operation, (unsigned) bytes,
+                  (unsigned) opCycles,   opCycles   / mhz,
+                  (unsigned) callCycles, callCycles / mhz);
+}
+#endif
+
 // Escrito byte a byte, e nao com memcpy do uint32_t, para que o formato no ar
 // nao dependa da arquitetura de quem manda nem de quem recebe.
 void writeCounterBE(uint8_t *out, uint32_t value)

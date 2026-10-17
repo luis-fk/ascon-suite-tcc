@@ -179,6 +179,10 @@ AsconSecureStatus asconSecureUnwrap(uint8_t peerId,
     *payloadLength = 0;
   }
 
+#if ASCON_SECURE_TIMING
+  uint32_t callStart = ESP.getCycleCount();
+#endif
+
   if (!receiverReady) {
     return ASCON_SECURE_ERR_NOT_READY;
   }
@@ -221,10 +225,16 @@ AsconSecureStatus asconSecureUnwrap(uint8_t peerId,
   uint8_t scratch[ASCON_SECURE_MAX_PAYLOAD];
   size_t  recovered = 0;
 
+#if ASCON_SECURE_TIMING
+  uint32_t opStart = ESP.getCycleCount();
+#endif
   int result = ascon128a_aead_decrypt(scratch, &recovered,
                                       packet + ASCON_SECURE_COUNTER_BYTES, cipherLength,
                                       header, headerLength,
                                       nonce, peer->key);
+#if ASCON_SECURE_TIMING
+  uint32_t opCycles = ESP.getCycleCount() - opStart;
+#endif
 
   secureZero(nonce, sizeof(nonce));
 
@@ -274,6 +284,10 @@ AsconSecureStatus asconSecureUnwrap(uint8_t peerId,
   secureZero(scratch, sizeof(scratch));
 
   *payloadLength = recovered;
+
+#if ASCON_SECURE_TIMING
+  logTiming("decifra", recovered, opCycles, ESP.getCycleCount() - callStart);
+#endif
 
   return ASCON_SECURE_OK;
 }
