@@ -9,6 +9,7 @@ Xtensa LX7), ambas a 240 MHz com o core arduino-esp32 3.3.11 (ESP-IDF 5.5.5).
 |---|---|---|
 | [`Ascon128a_Benchmark_Suite/`](Ascon128a_Benchmark_Suite/) | heap lido continuamente durante a operação, pilha por tarefa, piso de 2.000 medidas em 100 execuções por tamanho (0, 2, 16, 23, 32 e 64 B), tempo constante com cinco classes de entrada, Ascon-128a contra AES-128-GCM e AES-128-CTR (mbedTLS), verificação do que o acelerador de AES faz em cada chip | `bench-results-esp32.txt`, `bench-results-heltec.txt`. `parse_results.py` imprime as tabelas; `make_figures.py` gera as figuras do Cap5 |
 | [`Ascon128a_Flash_Footprint/`](Ascon128a_Flash_Footprint/) | custo de Flash da biblioteca, por diferença entre dois builds do mesmo sketch | `flash-results-esp32.txt`, `flash-results-heltec.txt` |
+| [`Ascon128a_Energy_Burst/`](Ascon128a_Energy_Burst/) | energia por operação com *shunt* e osciloscópio (Seção 3.4.4): rajadas de 20.000 operações marcadas por GPIO, Ascon-128a e AES-128-GCM, cifra e decifra, mais um controle de CPU ocupada | leitura no osciloscópio, tabela no README da pasta |
 
 Cada pasta tem um README com o método, os resultados das duas placas e as
 ressalvas. Os números citados no Cap5 saem desses logs sem retoque.

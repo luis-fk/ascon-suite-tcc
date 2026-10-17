@@ -1,0 +1,9 @@
+# Energia por rajada, ESP32 DevKit V1 (classico), 15/10/2026. Tektronix TBS1072B, ponta TPP0051 10X, CH2 50 mV/div BW on, 500 ms/div, N = 20000, payload 23 B.
+# T lido pelas bordas do retangulo do CH1 (+-0,03 s). V_raj/V_rep = Cursor Mean do CH2 com os cursores dentro da rajada / num trecho de repouso. Mean_tela = Mean do CH2 na tela inteira (5 s).
+# R nominal 1 ohm (nao calibrado); V_placa estimado 3,25 V (nao medido).
+caso,nome,T_s,V_raj_mV,V_rep_mV,Mean_tela_mV,foto_rajada,foto_repouso
+1,controle (espera ocupada 27 us),0.55,61.6,48.4,51.0,capturas-esp32/caso1-controle-rajada.jpg,capturas-esp32/caso1-controle-repouso.jpg
+2,Ascon-128a cifra,0.52,74.1,48.1,51.6,capturas-esp32/caso2-ascon-cifra-rajada.jpg,capturas-esp32/caso2-ascon-cifra-repouso.jpg
+3,Ascon-128a decifra,0.57,74.6,48.0,51.0,capturas-esp32/caso3-ascon-decifra-rajada.jpg,capturas-esp32/caso3-ascon-decifra-repouso.jpg
+4,AES-128-GCM cifra,1.02,71.4,52.1,54.1,capturas-esp32/caso4-gcm-cifra-rajada.jpg,capturas-esp32/caso4-gcm-cifra-repouso.jpg
+5,AES-128-GCM decifra,1.05,71.5,48.4,53.1,capturas-esp32/caso5-gcm-decifra-rajada.jpg,capturas-esp32/caso5-gcm-decifra-repouso.jpg
