@@ -1,7 +1,7 @@
 # Validação KAT na placa — Ascon-128a (ESP32)
 
 Sketch Arduino que roda um subconjunto representativo dos *Known Answer Tests*
-do Ascon-128a diretamente no ESP32. É a segunda parte da Seção 3.4.1: depois de
+do Ascon-128a diretamente no ESP32. É a segunda parte da Seção 3.3.1: depois de
 validar a biblioteca de forma exaustiva no desktop, confirmamos
 na própria placa que a compilação e a arquitetura (Xtensa LX, *little-endian*) não
 introduzem nenhuma divergência.

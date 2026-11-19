@@ -15,7 +15,11 @@ enlaces LoRa com Ascon-128a em ESP32. Além da biblioteca original, contém:
 * [`benchmark-validation/`](benchmark-validation/) — memória, tempo, tempo constante e comparativo com AES-128-GCM
 * [`ascon-lora/`](ascon-lora/) — biblioteca `AsconSecure`, a camada de segurança para o enlace LoRa
 
-Cada pasta tem seu README. O restante deste arquivo é o README original.
+Cada pasta tem seu README. As seções citadas neles seguem a numeração da
+monografia em 19/11/2026. Os comentários do *firmware* e os cabeçalhos dos
+*logs* gravados usam a numeração anterior (3.4.x no lugar de 3.3.x e 5.2.x no
+lugar de 5.3.x), mantida para os *logs* continuarem idênticos à saída do
+*firmware*. O restante deste arquivo é o README original.
 
 API's are provided for the following areas:
 

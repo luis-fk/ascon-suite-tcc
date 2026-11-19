@@ -1,8 +1,8 @@
 # Energia por operação — Ascon-128a × AES-128-GCM (ESP32)
 
-Medição da Seção 3.4.4. Resistor *shunt* no GND da placa, osciloscópio lendo a
-tensão nele, GPIO 4 como trigger. Mede só a operação criptográfica, o rádio é da
-infra. Uma cifragem dura 27 µs e some no ruído, por isso o sketch repete cada
+Medição da Seção 3.3.4, com os resultados na Seção 5.3.5. Resistor *shunt* no
+GND da placa, osciloscópio lendo a tensão nele, GPIO 4 como trigger. Mede só a
+operação criptográfica, sem o rádio. Uma cifragem dura 27 µs e some no ruído, por isso o sketch repete cada
 operação 20.000 vezes (meio segundo ou mais) com o GPIO 4 alto, e a média da
 tensão durante a rajada menos a média em repouso dá a corrente que a operação
 acrescenta.
@@ -98,51 +98,28 @@ leitura.
 
 ## Resultados
 
-**ESP32 DevKit V1 (clássico), 15/10/2026.** Leituras em
-[`leituras-esp32.csv`](leituras-esp32.csv), telas em
-[`capturas-esp32/`](capturas-esp32/). R = 1 Ω (1 %). Provisório em um
-ponto, V_placa estimado em 3,25 V (não medido). Uma captura por caso.
+Mesmo tratamento nas duas placas, o usado na monografia: um repouso por placa,
+a média das cinco leituras de `V_rep`. R = 1 Ω (1 %). As leituras de cada
+captura estão nos CSV e as telas nas pastas de capturas.
 
-| Caso | T (s) | V_raj (mV) | V_rep (mV) | ΔI (mA) | ΔP (mW) | E_op (µJ) |
-|---|---|---|---|---|---|---|
-| 1 controle | 0,55 | 61,6 | 48,4 | 13,2 | 43 | 1,2 |
-| 2 Ascon cifra | 0,52 | 74,1 | 48,1 | 26,0 | 85 | 2,2 |
-| 3 Ascon decifra | 0,57 | 74,6 | 48,0 | 26,6 | 86 | 2,5 |
-| 4 GCM cifra | 1,02 | 71,4 | 52,1 | 19,3 | 63 | 3,2 |
-| 5 GCM decifra | 1,05 | 71,5 | 48,4 | 23,1 | 75 | 3,9 |
+**ESP32 DevKit V1 (clássico), 15/10/2026.**
+[`leituras-esp32.csv`](leituras-esp32.csv),
+[`capturas-esp32/`](capturas-esp32/). V_placa adotado em 3,25 V, não medido.
+Repouso 49,0 mV (leituras de 48,0 a 52,1 mV). T lido pelos cursores, ±0,03 s.
 
-Leitura: o Ascon puxa **mais potência** que o AES-GCM (a CPU calcula o tempo
-todo, no GCM ela espera o acelerador), mas termina em metade do tempo, e por
-operação gasta **menos energia**, 2,2 contra 3,2 µJ na cifra (1,5×) e 2,5
-contra 3,9 µJ na decifra (1,6×). O controle mostra que só manter a CPU acordada
-custa 13 mA; o algoritmo acrescenta outros 13. Em 23 B, a cifra Ascon custa
-~0,1 µJ por byte. O *tag* de 16 B no ar a SF7 (~26 ms a 120 mA) custa ~10 mJ,
-quatro mil vezes a cifragem.
+| Caso | T (s) | V_raj (mV) | ΔI (mA) | ΔP (mW) | E_op (µJ) |
+|---|---|---|---|---|---|
+| 1 controle | 0,55 | 61,6 | 12,6 | 41 | 1,1 |
+| 2 Ascon cifra | 0,52 | 74,1 | 25,1 | 82 | 2,1 |
+| 3 Ascon decifra | 0,57 | 74,6 | 25,6 | 83 | 2,4 |
+| 4 GCM cifra | 1,02 | 71,4 | 22,4 | 73 | 3,7 |
+| 5 GCM decifra | 1,05 | 71,5 | 22,5 | 73 | 3,8 |
 
-Incerteza: o repouso variou de 48,0 a 52,1 mV entre janelas de 0,5 s (o
-baseline deduzido da média da tela inteira fica em 48 a 50), logo ΔI tem
-±2 mA, uns 10 %, bem acima do 1 % do resistor. O caso 4 com o repouso
-deduzido (49,7 mV) daria 21,7 mA e 3,6 µJ. Resolução a 50 mV/div com ponta 10X é 2 mV por nível, a média sobre
-250 pontos resolve abaixo disso.
-
-Na monografia as duas placas usam o mesmo tratamento, um repouso único por
-placa, a média das cinco leituras de `V_rep`. Na clássica isso dá 49,0 mV e:
-
-| Caso | ΔI (mA) | E_op (µJ) |
-|---|---|---|
-| 1 controle | 12,6 | 1,1 |
-| 2 Ascon cifra | 25,1 | 2,1 |
-| 3 Ascon decifra | 25,6 | 2,4 |
-| 4 GCM cifra | 22,4 | 3,7 |
-| 5 GCM decifra | 22,5 | 3,8 |
-
-Com esse repouso a razão GCM/Ascon fica em 1,8× na cifra e 1,6× na decifra.
-
-**Heltec WiFi LoRa 32 V3 (ESP32-S3), 19/11/2026.** Leituras em
-[`leituras-heltec.csv`](leituras-heltec.csv), telas em
-[`capturas-heltec/`](capturas-heltec/). Fonte de bancada em 3,3 V no pino 3V3,
-USB desligado, R = 1 Ω (1 %), V_placa = 3,2 V medido no multímetro. Core
-arduino-esp32 3.3.11.
+**Heltec WiFi LoRa 32 V3 (ESP32-S3), 19/11/2026.**
+[`leituras-heltec.csv`](leituras-heltec.csv),
+[`capturas-heltec/`](capturas-heltec/). V_placa = 3,2 V, medido no multímetro.
+Repouso 43,1 mV (leituras de 42,0 a 46,2 mV). T medido pelo Pos Width. O caso 4
+é a média de duas capturas (69,8 e 72,1 mV). Core arduino-esp32 3.3.11.
 
 | Caso | T (s) | V_raj (mV) | ΔI (mA) | ΔP (mW) | E_op (µJ) |
 |---|---|---|---|---|---|
@@ -152,25 +129,18 @@ arduino-esp32 3.3.11.
 | 4 GCM cifra | 1,756 | 70,9 | 27,9 | 89 | 7,8 |
 | 5 GCM decifra | 1,786 | 69,0 | 25,9 | 83 | 7,4 |
 
-Repouso único para os cinco casos, 43,1 mV, média de cinco leituras diretas
-(42,0 a 46,2 mV). O caso 4 é a média de duas capturas (69,8 e 72,1 mV).
+Leitura: a potência das duas cifras é parecida, e a diferença está no tempo. Na
+Heltec o AES-GCM leva 88 µs por operação contra 25 µs do Ascon, pelo custo fixo
+do acelerador com DMA, e gasta **3,5× a energia** na cifra e **3,2×** na
+decifra. Na clássica a razão é 1,8× e 1,6×. O Ascon gasta entre 2,1 e 2,4 µJ
+nas duas placas. O controle mostra o custo de só manter a CPU ocupada, 12,6 mA
+na clássica e 19,8 mA na Heltec.
 
-Leitura: nesta placa a potência das duas cifras é praticamente a mesma, perto
-de 90 mW acima do repouso, e a diferença está toda no tempo. O AES-GCM leva
-88 µs por operação contra 25 µs do Ascon, por causa do custo fixo do
-acelerador com DMA, e por isso gasta **3,5× a energia** na cifra (7,8 contra
-2,2 µJ) e **3,2×** na decifra (7,4 contra 2,3 µJ). O Ascon gasta o mesmo nas
-duas placas, entre 2,1 e 2,4 µJ.
-
-Incerteza: o repouso variou 1,8 mV (desvio padrão) entre capturas, logo ΔI tem
-±2 mA, uns 7 %. A rajada repetiu dentro de 1,5 mV em quatro dos cinco casos.
-
-Diferença de procedimento em relação a 15/10: o Cursor Mean só era calculado no
-momento da captura, e mover os cursores com a tela congelada não atualizava o
-valor. Os cursores ficaram fixos antes do Single, em 0,02 a 0,44 s para a
-rajada e em 3,20 a 4,22 s para o repouso, uma captura para cada leitura.
-
-Na ESP32 clássica o V_placa ficou no valor adotado de 3,25 V. Não foi medido.
+Incerteza: o repouso variou cerca de 1,8 mV (desvio padrão) entre as leituras,
+nas duas placas, logo ΔI tem ±2 mA, de 7 % a 9 % nos casos com algoritmo. Na
+clássica as rajadas do GCM duraram 1,02 e 1,05 s contra 0,87 e 0,91 s esperados
+pelos pisos de ciclos, e a causa não foi investigada. Na Heltec as quatro
+rajadas ficaram a menos de 1 % do esperado.
 
 ## Ressalvas
 

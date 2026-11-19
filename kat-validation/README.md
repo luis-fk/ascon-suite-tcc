@@ -2,7 +2,7 @@
 
 Aqui ficam as evidências de que a implementação do Ascon-128a (v1.2) que usamos
 no trabalho passa nos testes oficiais de vetores conhecidos (Known Answer
-Tests). É a etapa de validação matemática em desktop descrita na Seção 3.4.1.
+Tests). É a etapa de validação matemática em desktop descrita na Seção 3.3.1.
 
 ## Arquivos
 
