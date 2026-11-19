@@ -12,6 +12,8 @@ acrescenta.
 Ciclo infinito: repouso 10 s → GPIO 4 alto → 20.000 operações → GPIO 4 baixo →
 pausa 200 ms → **k pulsos de 100 ms** (k = caso). Mesma chave, nonce e payload
 (23 B) da suíte. Autoteste no `setup()`; se falhar, o GPIO 4 pisca a 10 Hz.
+Compilar com o core arduino-esp32 3.3.x, o mesmo dos benchmarks. No 4.0.0
+(mbedTLS 4) o `mbedtls/gcm.h` deixou de ser público e o sketch não compila.
 
 | k | Caso | Rajada esperada (clássico / S3) |
 |---|---|---|
@@ -34,6 +36,12 @@ pausa 200 ms → **k pulsos de 100 ms** (k = caso). Mesma chave, nonce e payload
 5. **V_placa**, uma vez: multímetro entre os pinos 3V3 e GND **da placa**
    durante uma rajada. Ou use 3,3 V menos `V_raj`.
 
+Na Heltec V3, vista de cima com o USB para baixo, os três pinos ficam na
+fileira esquerda (J3), contando a partir da antena: GND = 1º, 3V3 = 2º e 3º,
+GPIO 4 = 15º. Antes de ligar a fonte: continuidade 3V3–GND sem apito, 3,3 V
+entre os dois pinos só com o USB, fonte com limite de corrente baixo, positivo
+ligado por último.
+
 ## Osciloscópio Tektronix TBS1072B
 
 Pontas do laboratório: TPP0051, fixas em 10X, sem chave. Botão lateral = os
@@ -52,7 +60,8 @@ cinco à direita da tela. Multipurpose = botão giratório grande, gira e aperta
 7. Scale horizontal → **500 ms**. Position horizontal → marcador **T** a uma
    divisão da borda esquerda (M Pos ≈ 2 s). Apertar o botão centraliza.
 8. **Measure** → **Ch2** → Multipurpose até **Cursor Mean** → aperta.
-   **Measure** → **Ch1** → **Positive Pulse Width** → aperta (opcional).
+   **Measure** → **Ch2** → **Mean** → aperta (tela inteira, conferência).
+   **Measure** → **Ch1** → **Positive Pulse Width** → aperta (dá o `T`).
 9. **Cursor** → Type **Time**. Multipurpose move o cursor; os botões laterais
    Cursor 1 / Cursor 2 escolhem qual.
 10. **Save/Recall** → Action → **Save Setup** → Save (pendrive na frente), para
@@ -71,7 +80,15 @@ cinco à direita da tela. Multipurpose = botão giratório grande, gira e aperta
 6. **Single** de novo para o próximo caso. Repita o caso 2 uma vez para ver se
    `V_raj` e `V_rep` se repetem.
 
-O **Mean** sem "Cursor" é da tela inteira e mistura rajada e repouso, não use.
+O **Mean** sem "Cursor" é da tela inteira e mistura rajada e repouso. Não
+serve de `V_raj`, mas confere o repouso da mesma captura:
+`V_rep = (Mean × 5 s − V_raj × T) / (5 s − T)`.
+
+Se o **Cursor Mean** não mudar ao mover os cursores com a tela congelada
+(aconteceu em 19/11, não em 15/10), ele só está sendo calculado na captura.
+Nesse caso posicione os cursores **antes** do Single e não mexa depois:
+0,02 a 0,44 s para a rajada, 3,2 a 4,2 s para o repouso, uma captura para cada
+leitura.
 
 ## Conta
 
@@ -108,7 +125,52 @@ baseline deduzido da média da tela inteira fica em 48 a 50), logo ΔI tem
 deduzido (49,7 mV) daria 21,7 mA e 3,6 µJ. Resolução a 50 mV/div com ponta 10X é 2 mV por nível, a média sobre
 250 pontos resolve abaixo disso.
 
-**Pendente:** Heltec ESP32-S3; medir V_placa; repetir o caso 2.
+Na monografia as duas placas usam o mesmo tratamento, um repouso único por
+placa, a média das cinco leituras de `V_rep`. Na clássica isso dá 49,0 mV e:
+
+| Caso | ΔI (mA) | E_op (µJ) |
+|---|---|---|
+| 1 controle | 12,6 | 1,1 |
+| 2 Ascon cifra | 25,1 | 2,1 |
+| 3 Ascon decifra | 25,6 | 2,4 |
+| 4 GCM cifra | 22,4 | 3,7 |
+| 5 GCM decifra | 22,5 | 3,8 |
+
+Com esse repouso a razão GCM/Ascon fica em 1,8× na cifra e 1,6× na decifra.
+
+**Heltec WiFi LoRa 32 V3 (ESP32-S3), 19/11/2026.** Leituras em
+[`leituras-heltec.csv`](leituras-heltec.csv), telas em
+[`capturas-heltec/`](capturas-heltec/). Fonte de bancada em 3,3 V no pino 3V3,
+USB desligado, R = 1 Ω (1 %), V_placa = 3,2 V medido no multímetro. Core
+arduino-esp32 3.3.11.
+
+| Caso | T (s) | V_raj (mV) | ΔI (mA) | ΔP (mW) | E_op (µJ) |
+|---|---|---|---|---|---|
+| 1 controle | 0,556 | 62,9 | 19,8 | 63 | 1,8 |
+| 2 Ascon cifra | 0,499 | 71,2 | 28,1 | 90 | 2,2 |
+| 3 Ascon decifra | 0,520 | 71,0 | 27,9 | 89 | 2,3 |
+| 4 GCM cifra | 1,756 | 70,9 | 27,9 | 89 | 7,8 |
+| 5 GCM decifra | 1,786 | 69,0 | 25,9 | 83 | 7,4 |
+
+Repouso único para os cinco casos, 43,1 mV, média de cinco leituras diretas
+(42,0 a 46,2 mV). O caso 4 é a média de duas capturas (69,8 e 72,1 mV).
+
+Leitura: nesta placa a potência das duas cifras é praticamente a mesma, perto
+de 90 mW acima do repouso, e a diferença está toda no tempo. O AES-GCM leva
+88 µs por operação contra 25 µs do Ascon, por causa do custo fixo do
+acelerador com DMA, e por isso gasta **3,5× a energia** na cifra (7,8 contra
+2,2 µJ) e **3,2×** na decifra (7,4 contra 2,3 µJ). O Ascon gasta o mesmo nas
+duas placas, entre 2,1 e 2,4 µJ.
+
+Incerteza: o repouso variou 1,8 mV (desvio padrão) entre capturas, logo ΔI tem
+±2 mA, uns 7 %. A rajada repetiu dentro de 1,5 mV em quatro dos cinco casos.
+
+Diferença de procedimento em relação a 15/10: o Cursor Mean só era calculado no
+momento da captura, e mover os cursores com a tela congelada não atualizava o
+valor. Os cursores ficaram fixos antes do Single, em 0,02 a 0,44 s para a
+rajada e em 3,20 a 4,22 s para o repouso, uma captura para cada leitura.
+
+Na ESP32 clássica o V_placa ficou no valor adotado de 3,25 V. Não foi medido.
 
 ## Ressalvas
 

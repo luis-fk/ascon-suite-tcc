@@ -1,0 +1,16 @@
+# Energia por rajada, Heltec WiFi LoRa 32 V3 (ESP32-S3), 19/11/2026. Tektronix TBS1072B, ponta TPP0051 10X, CH2 50 mV/div BW on, 500 ms/div, N = 20000, payload 23 B.
+# Core arduino-esp32 3.3.11. Fonte Minipa MPC-3003 em 3,3 V no pino 3V3, USB desligado. R = 1 ohm. V_placa = 3,2 V (multimetro, entre 3V3 e GND da placa).
+# Neste dia o Cursor Mean so era calculado na captura; os cursores ficaram fixos antes do Single. janela rajada = 0,02 a 0,44 s; janela repouso = 3,20 a 4,22 s.
+# T = Pos Width do CH1. Mean_tela = Mean do CH2 na tela inteira (5 s).
+hora,caso,nome,janela,Cursor_Mean_mV,Mean_tela_mV,T_s,foto,obs
+21:00,1,controle (espera ocupada 27 us),rajada,62.9,45.8,0.556,capturas-heltec/caso1-controle-rajada.jpg,
+21:01,2,Ascon-128a cifra,rajada,71.2,45.3,0.498,capturas-heltec/caso2-ascon-cifra-rajada.jpg,
+21:00,3,Ascon-128a decifra,rajada,71.0,47.7,0.5199,capturas-heltec/caso3-ascon-decifra-rajada.jpg,
+21:01,4,AES-128-GCM cifra,rajada,69.8,54.9,1.756,capturas-heltec/caso4-gcm-cifra-rajada-a.jpg,"foto tirada em Trig'd, antes de Acq Complete"
+21:06,4,AES-128-GCM cifra,rajada,72.1,53.4,1.756,capturas-heltec/caso4-gcm-cifra-rajada-b.jpg,repeticao
+21:01,5,AES-128-GCM decifra,rajada,69.0,52.0,1.786,capturas-heltec/caso5-gcm-decifra-rajada.jpg,
+21:04,1,controle (espera ocupada 27 us),repouso,42.2,44.4,0.5558,capturas-heltec/caso1-controle-repouso.jpg,
+21:04,2,Ascon-128a cifra,repouso,42.6,45.2,0.5,capturas-heltec/caso2-ascon-cifra-repouso.jpg,
+21:04,3,Ascon-128a decifra,repouso,46.2,47.7,0.5199,capturas-heltec/caso3-ascon-decifra-repouso.jpg,
+21:05,4,AES-128-GCM cifra,repouso,42.4,52.0,1.756,capturas-heltec/caso4-gcm-cifra-repouso.jpg,
+21:05,5,AES-128-GCM decifra,repouso,42.0,52.0,1.786,capturas-heltec/caso5-gcm-decifra-repouso.jpg,

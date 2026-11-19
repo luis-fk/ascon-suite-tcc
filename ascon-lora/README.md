@@ -16,9 +16,9 @@ ainda pendente.
 
 - Custo fixo de **20 bytes** por mensagem (`ASCON_SECURE_OVERHEAD`).
 - O tamanho é o do *payload* de cada mensagem, sem preenchimento. O único
-  limite é o teto `ASCON_SECURE_MAX_PAYLOAD` em `AsconSecure.h` (hoje 200,
-  provisório; será ajustado ao teto do enlace). Acima dele o `Pack` devolve
-  erro e nada vai ao ar.
+  limite é o teto `ASCON_SECURE_MAX_PAYLOAD` em `AsconSecure.h`, 200 por
+  padrão. É uma constante de compilação, ajustável ao projeto editando o
+  valor nesse arquivo. Acima dele o `Pack` devolve erro e nada vai ao ar.
 - O *nonce* de 16 bytes é `prefixo (12 B, fixo por nó) || contador (4 B)`. Só o
   contador viaja; o receptor conhece o prefixo desde o provisionamento. O
   contador não precisa de proteção própria: alterá-lo altera o *nonce* e a
