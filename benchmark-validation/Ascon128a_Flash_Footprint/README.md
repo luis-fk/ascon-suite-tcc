@@ -1,8 +1,7 @@
 # Custo de Flash do Ascon-128a
 
 Sketch mínimo para medir quanto a biblioteca `ascon-suite` acrescenta ao
-firmware. Substitui a medição antiga de 7.048 bytes (sketch `Ascon128a_Benchmark`,
-removido em 27/09/2026), que não registrava a versão do core.
+firmware.
 
 ## Como medir
 
@@ -39,8 +38,7 @@ completas em `flash-results-esp32.txt` e `flash-results-heltec.txt`.
 
 Pelo `getSketchSize()` impresso na serial, a diferença é 6.800 B nas duas
 placas (277.888 − 271.088 e 282.400 − 275.600); os 12 B a mais na linha da IDE
-do S3 são alinhamento da imagem. A medição antiga, 7.048 B com o core 2.0.17,
-fica substituída.
+do S3 são alinhamento da imagem.
 
 Sobre a linha `Sketch + espaco livre` da serial: `getFreeSketchSpace()` devolve
 o tamanho da partição de atualização OTA, não o que resta na partição atual,

@@ -1,15 +1,9 @@
 # Benchmark — memória, tempo e comparativo com AES-128-GCM (Ascon-128a, ESP32)
 
-Sketch Arduino que mede, num único *firmware*, tudo o que a Seção 3.4.3 pede
-para o Ascon-128a e o comparativo com o AES-128-GCM da Seção 5.2.4. Até
-27/09/2026 isso estava espalhado em cinco sketches (`Ascon128a_Benchmark`,
-`Ascon128a_Benchmark_Loop`, `AsconVsAES_Benchmark`, `AsconVsAES_Benchmark_Loop`
-e `AES_HardwareCheck`), removidos quando esta suíte os substituiu. O histórico
-do git os guarda.
-
-Um firmware só porque quatro firmwares davam quatro pisos diferentes para a
-mesma operação (6.117, 6.115, 6.114 e 6.111 ciclos), por diferença de geração
-de código entre builds. Agora há um número por medida.
+Sketch Arduino que mede, num único *firmware*, tudo o que a Seção 3.3.3 pede
+para o Ascon-128a e o comparativo com o AES-128-GCM da Seção 5.3.4. É um
+firmware só para que cada medida tenha um único número: builds diferentes geram
+código diferente e pisos que variam alguns ciclos.
 
 ## O que ele faz, na ordem do log
 
@@ -67,22 +61,17 @@ igual, 16 e 23 B custam igual, e 32 B é o próximo degrau. O AES-GCM cifra
 ### Heap: por que um observador
 
 Uma alocação feita e liberada dentro da operação não muda o *heap* livre de
-antes nem o de depois. O "heap mínimo histórico" do ESP-IDF também não serve:
-é a soma dos mínimos de cada região de memória, e uma alocação só deixa marca
-se a região em que caiu descer abaixo do próprio mínimo, o que normalmente não
-acontece. Então uma tarefa no núcleo 0 lê o *heap* livre em laço enquanto a
+antes nem o de depois, e o "heap mínimo histórico" do ESP-IDF também não a
+registra. Por isso uma tarefa no núcleo 0 lê o *heap* livre em laço enquanto a
 operação roda no núcleo 1 e guarda o menor valor. O log diz quantas leituras
-houve; algumas dezenas em 40 µs bastam para pegar os descritores do driver de
-DMA do ESP32-S3, que vivem quase a operação inteira.
+houve em cada operação.
 
 ### Pilha
 
 `uxTaskGetStackHighWaterMark` devolve o ponto mais fundo que a pilha da tarefa
-**já** atingiu. Lida na tarefa principal depois de `Serial.print`, não mede
-nada. Por isso cada operação roda oito vezes numa tarefa nova de 8.192 bytes,
-e a marca é lida lá dentro, antes e depois, sem imprimir nada no meio. No
-ESP-IDF a marca vem em bytes (`task.h`: "in bytes not words, unlike vanilla
-FreeRTOS").
+já atingiu. Cada operação roda oito vezes numa tarefa nova de 8.192 bytes, e a
+marca é lida lá dentro, antes e depois, sem imprimir nada no meio. No ESP-IDF a
+marca vem em bytes.
 
 ## Organização dos arquivos
 
@@ -99,9 +88,6 @@ FreeRTOS").
 | `bench_report.h/.cpp` | linhas de resultado, ajuste linear, contagem de problemas |
 | `bench_suite.h/.cpp` | as sete seções, na ordem, e o veredito |
 
-A separação é por pergunta: o *timer* mede e não sabe o que mede; `ascon` e
-`aes` dizem o que medir e não sabem medir; `suite` decide a ordem e julga.
-
 ## Como rodar
 
 O código é o mesmo para o ESP32 clássico e para a Heltec WiFi LoRa 32 V3
@@ -112,14 +98,10 @@ O código é o mesmo para o ESP32 clássico e para a Heltec WiFi LoRa 32 V3
 2. Abrir `Ascon128a_Benchmark_Suite.ino`; os arquivos da pasta compilam
    juntos.
 3. Escolher a placa em **Ferramentas → Placa**: *ESP32 Dev Module* ou *Heltec
-   WiFi LoRa 32 V3*. Na Heltec, habilitar **USB CDC On Boot** para a serial.
+   WiFi LoRa 32(V3)*.
 4. Gravar. Abrir o Monitor Serial em **115200**.
 5. Esperar uns 7 minutos; cada `.` é uma execução. Salvar a saída inteira em
    `bench-results-esp32.txt` ou `bench-results-heltec.txt`, nesta pasta.
-
-Régua de aceitação antes de aposentar os sketches antigos: no ESP32 clássico,
-o custo por bloco tem de reproduzir 1.097 ciclos (Ascon) e 2.109 (AES-GCM), e
-os pisos ficarem a poucos ciclos dos publicados na Seção 5.2.
 
 ## Resultado
 
@@ -129,10 +111,6 @@ partição de 1.310.720 B) e `bench-results-heltec.txt` (ESP32-S3 rev 2,
 partição de 3.342.336 B). Veredito `BENCHMARK OK` nas duas; zero problemas;
 2 ressalvas no clássico e 7 na Heltec, todas listadas abaixo. As tabelas são
 geradas por `parse_results.py` a partir dos logs.
-
-Régua de aceitação: o clássico reproduziu os 1.097 (Ascon) e 2.109 (AES-GCM)
-ciclos por bloco das medições anteriores, exatos, e os pisos a +17 e +62
-ciclos, constantes em todos os tamanhos (build e chamada indireta).
 
 ### Como ler
 

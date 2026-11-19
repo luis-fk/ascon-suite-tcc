@@ -1,7 +1,7 @@
 # Validação AEAD (adulteração) — Ascon-128a (ESP32)
 
 Sketch Arduino que valida a **autenticidade** do modo AEAD e sua capacidade de
-**rejeitar adulterações** (Seção 3.4.2). Simula um ataque de *Man-in-the-middle*
+**rejeitar adulterações** (Seção 3.3.2). Simula um ataque de *Man-in-the-middle*
 sobre um pacote em trânsito, repetindo a bateria para seis formatos de pacote.
 
 ## O que ele faz
@@ -86,16 +86,8 @@ recusa, o sketch mede a **maior sequência de bytes** presente ao mesmo tempo na
 saída e no texto claro original, e reporta quantos casos atingiram 2, 3 e 4
 bytes.
 
-Como ler:
-
-| Maior sequência | Leitura |
-|---|---|
-| 0 | nada escrito que se pareça com o texto claro |
-| 1 | ruído, ignorar |
-| 2 | provável acaso, sobretudo se forem poucos casos |
-| 3 ou mais | **achado real** — vazamento é contíguo, acaso é curto e disperso |
-
-O veredito final usa o limiar de 4 bytes (`LEAK_RUN`).
+Um vazamento real é contíguo, e coincidências são curtas e dispersas. O veredito
+final usa o limiar de 4 bytes (`LEAK_RUN`).
 
 ## Organização dos arquivos
 
@@ -107,10 +99,6 @@ O veredito final usa o limiar de 4 bytes (`LEAK_RUN`).
 | `aead_tampering.h/.cpp` | as adulterações |
 | `aead_suite.h/.cpp` | orquestração e relatório |
 
-A separação é por **pergunta**: o *oracle* julga e não sabe quais adulterações
-existem; o *tampering* fabrica ataques e não sabe julgar. Adulteração nova
-acrescentada ao *tampering* já ganha a verificação de vazamento de graça.
-
 ## Como rodar
 
 O código é **o mesmo para o ESP32 clássico e para a placa Heltec** — o sketch
@@ -119,17 +107,10 @@ não usa rádio nem pinos específicos, só a serial e a biblioteca.
 1. Instalar a biblioteca `ascon-suite` no Arduino IDE.
 2. Abrir `Ascon128a_AEAD_BitFlip/Ascon128a_AEAD_BitFlip.ino` (os nove arquivos
    da pasta — `.ino`, `.h` e `.cpp` — são compilados juntos, automaticamente).
-3. Escolher a placa em **Ferramentas → Placa**:
-   - ESP32 clássico: *ESP32 Dev Module*
-   - Heltec: *Heltec WiFi LoRa 32 V3* (ou *ESP32S3 Dev Module*)
+3. Escolher a placa em **Ferramentas → Placa**: *ESP32 Dev Module* ou *Heltec
+   WiFi LoRa 32(V3)*.
 4. Selecionar a porta e gravar.
 5. Abrir o Monitor Serial em **115200**.
-
-### Se a serial não mostrar nada na Heltec
-
-A Heltec V3 é ESP32-S3 e usa USB nativo. Em **Ferramentas**, habilitar
-**USB CDC On Boot**. Sem isso a placa grava normalmente, mas não aparece saída
-no Monitor Serial.
 
 ## Resultado
 
@@ -159,10 +140,6 @@ Veredito impresso pelo sketch:
 ```
 >>> AEAD OK: intacto aceito, toda adulteracao rejeitada, nenhum vazamento <<<
 ```
-
-A versão anterior deste sketch cobria apenas três frentes de 1 bit, num único
-formato (560 adulterações), e não verificava vazamento. Os números antigos não
-são comparáveis aos desta versão.
 
 ## Limite conhecido: *replay*
 
