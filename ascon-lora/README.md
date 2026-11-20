@@ -5,9 +5,8 @@ o Ascon-128a e rejeita repetições no receptor. Ela não fala com o rádio: rec
 bytes do sketch e devolve bytes para o sketch, nos dois sentidos. O rádio, o
 cabeçalho do quadro e a configuração do enlace ficam com quem integra.
 
-**Estado:** compilada e testada em host neste repositório. A execução no enlace
-LoRa, com nó e gateway, foi feita pela frente de infraestrutura do projeto e
-está relatada na monografia.
+**Estado:** sem testes automatizados neste repositório. O comportamento descrito
+abaixo foi conferido por leitura do código.
 
 ## O pacote no ar
 
